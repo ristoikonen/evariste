@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGlowData • Clinical Cadence Portal</title>
+    <!-- Inter & JetBrains Mono Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cadence-blue: #2563eb;
+            --cadence-dark: #0f172a;
+            --crayon-orange: #f78522;
+            --crayon-amber: #BF8040;
+            --crayon-blue: #406ABF;
+            --crayon-red: #BF4040;
+            --crayon-purple: #950495;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --emerald-500: #10b981;
+            --emerald-700: #047857;
+            --emerald-50: #ecfdf5;
+            --emerald-200: #a7f3d0;
+            --red-700: #b91c1c;
+            --red-50: #fef2f2;
+            --red-200: #fecaca;
+            --blue-700: #1d4ed8;
+            --blue-50: #eff6ff;
+            --blue-200: #bfdbfe;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--slate-50);
+            color: var(--slate-900);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        ::selection {
+            background-color: var(--cadence-blue);
+            color: white;
+        }
+
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .card-shadow {
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+        }
+
+        /* Layout & Grid Helpers */
+        header {
+            background-color: white;
+            border-bottom: 1px solid var(--slate-200);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .container {
+            max-width: 72rem;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            width: 100%;
+        }
+
+        .header-inner {
+            height: 4.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        main {
+            max-width: 72rem;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            padding-top: 2.5rem;
+            padding-bottom: 2.5rem;
+            width: 100%;
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (min-width: 1024px) {
+            main {
+                grid-template-columns: repeat(12, minmax(0, 1fr));
+            }
+            .col-span-7 {
+                grid-column: span 7 / span 7;
+            }
+            .col-span-5 {
+                grid-column: span 5 / span 5;
+            }
+        }
+
+        /* Component Styles */
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            border: 1px solid var(--slate-200);
+            padding: 2rem;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .space-x-3 > * + * {
+            margin-left: 0.75rem;
+        }
+
+        .space-x-4 > * + * {
+            margin-left: 1rem;
+        }
+
+        .space-x-1\.5 > * + * {
+            margin-left: 0.375rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .space-y-1 > * + * {
+            margin-top: 0.25rem;
+        }
+
+        .dot {
+            width: 0.875rem;
+            height: 0.875rem;
+            border-radius: 9999px;
+            display: inline-block;
+        }
+
+        .dot-sm {
+            width: 0.625rem;
+            height: 0.625rem;
+            border-radius: 9999px;
+            display: inline-block;
+        }
+
+        .bg-cadenceBlue { background-color: var(--cadence-blue); }
+        .bg-crayonOrange { background-color: var(--crayon-orange); }
+        .bg-crayonAmber { background-color: var(--crayon-amber); }
+        .bg-crayonBlue { background-color: var(--crayon-blue); }
+        .bg-crayonRed { background-color: var(--crayon-red); }
+        .bg-crayonPurple { background-color: var(--crayon-purple); }
+        .bg-emerald { background-color: var(--emerald-500); }
+
+        .text-cadenceBlue { color: var(--cadence-blue); }
+        .text-slate-900 { color: var(--slate-900); }
+        .text-slate-700 { color: var(--slate-700); }
+        .text-slate-600 { color: var(--slate-600); }
+        .text-slate-500 { color: var(--slate-500); }
+        .text-emerald-600 { color: #059669; }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--slate-500);
+            background-color: var(--slate-100);
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid var(--slate-200);
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--slate-600);
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            background-color: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--slate-800);
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--slate-400);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--cadence-blue);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .grid-cols-4 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .grid-cols-4 {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        .btn {
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: var(--cadence-blue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--blue-700);
+        }
+
+        .btn-secondary {
+            background-color: var(--slate-100);
+            border-color: var(--slate-200);
+            color: var(--slate-700);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--slate-200);
+        }
+
+        .locale-btn {
+            padding: 0.625rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 0.75rem;
+            border: 1px solid var(--slate-200);
+            background-color: var(--slate-50);
+            color: var(--slate-700);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .locale-btn:hover {
+            border-color: var(--cadence-blue);
+            color: var(--cadence-blue);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .preview-box {
+            position: relative;
+            background-color: var(--slate-900);
+            border-radius: 0.75rem;
+            border: 1px solid #1e293b;
+            padding: 1rem;
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+            overflow-x: auto;
+        }
+
+        .status-box-msg {
+            font-size: 0.75rem;
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        footer {
+            border-top: 1px solid var(--slate-200);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--slate-500);
+            background-color: white;
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="width: 10px; height: 10px; background: #f78522; border-radius: 50%; box-shadow: 0 0 8px #f78522;"></div>
+        <span style="color: #fff; font-weight: 600; font-size: 14px; letter-spacing: 0.5px;">IGlow Portal</span>
+    </div>
+    
+ 
+
+    <main>
+        <!-- Form Section (Left Column) -->
+        <div class="col-span-7" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="card card-shadow">
+                
+                <div class="flex-row" style="justify-content: space-between; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--slate-100);">
+                    <div>
+                        <h2 style="font-size: 1.25rem; font-weight: 700; letter-spacing: -0.025em;" class="text-slate-900">
+                            Payload Configuration
+                        </h2>
+                        <p style="font-size: 0.75rem; margin-top: 0.25rem;" class="text-slate-500">Configure IGlowData parameters in real-time</p>
+                    </div>
+                    <div class="flex-row space-x-1.5">
+                        <span class="dot-sm bg-crayonOrange" title="Orange Accent"></span>
+                        <span class="dot-sm bg-crayonAmber" title="Amber Accent"></span>
+                        <span class="dot-sm bg-crayonBlue" title="Blue Accent"></span>
+                        <span class="dot-sm bg-crayonRed" title="Red Accent"></span>
+                        <span class="dot-sm bg-crayonPurple" title="Purple Accent"></span>
+                    </div>
+                </div>
+                
+                <form id="glowForm" class="space-y-6" onsubmit="return false;">
+                    
+                    <!-- Message Field -->
+                    <div>
+                        <label for="messageInput">Message Payload</label>
+                        <input type="text" id="messageInput" value="System operating normally across regional grid.">
+                    </div>
+
+                    <!-- Locale Field -->
+                    <div>
+                        <label for="localeInput">Locale Preset / Custom</label>
+                        <div class="grid-cols-4" style="margin-bottom: 0.75rem;">
+                            <button type="button" onclick="setLocale('Palmer')" class="locale-btn">Palmer</button>
+                            <button type="button" onclick="setLocale('Crace')" class="locale-btn">Crace</button>
+                            <button type="button" onclick="setLocale('Kaleen')" class="locale-btn">Kaleen</button>
+                            <button type="button" onclick="setLocale('Giralang')" class="locale-btn">Gira</button>
+                            <button type="button" onclick="setLocale('Gungahlin')" class="locale-btn">Gung</button>
+                            <button type="button" onclick="setLocale('Franklin')" class="locale-btn">Franklin</button>
+                            <button type="button" onclick="setLocale('Harrison')" class="locale-btn">Harrison</button>
+                            <button type="button" onclick="setLocale('Belconnen')" class="locale-btn">Belco</button>
+                        </div>
+                        <input type="text" id="localeInput" value="Palmer" placeholder="Select preset or type custom locale...">
+                    </div>
+
+                    <!-- Timestamp Field (AU 24h & Editable) -->
+                    <div>
+                        <div class="flex-row" style="justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label for="timestampInput" style="margin-bottom: 0;">Timestamp (HH:MM:SS)</label>
+                            <button type="button" onclick="refreshTimestamp()" style="font-size: 0.75rem; font-weight: 600; background: none; border: none; cursor: pointer;" class="text-cadenceBlue flex-row space-x-1">
+                                <span>Sync Current Time</span>
+                            </button>
+                        </div>
+                        <input type="text" id="timestampInput" placeholder="HH:MM:SS" class="mono-font">
+                        <input type="hidden" id="userEmailInput" value="risto@gmxi.com">
+                    </div>
+
+                    <!-- Actions -->
+                    <div style="padding-top: 1rem;" class="flex-row space-x-4">
+                        <button type="button" onclick="submitData()" class="btn btn-primary">
+                            Submit
+                        </button>
+                        <button type="button" onclick="resetForm()" class="btn btn-secondary">
+                            Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Preview & Status Section (Right Column) -->
+        <div class="col-span-5" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div>
+                <div class="flex-row" style="justify-content: space-between; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--slate-100);">
+                    <h3 style="font-size: 1rem; font-weight: 700;" class="text-slate-900">Live JSON Preview</h3>
+                    <button onclick="copyJsonToClipboard()" class="btn btn-secondary" style="padding: 0.375rem 0.75rem; font-size: 0.75rem;">
+                        Copy JSON
+                    </button>
+                </div>
+
+                <!-- JSON Code Block -->
+                <div class="preview-box">
+                    <pre id="jsonPreviewOutput" style="color: #60a5fa; line-height: 1.4; width: 100%;" class="mono-font"></pre>
+                </div>
+
+                <!-- Status Feedback Box -->
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--slate-100);">
+                    <div id="statusLog" class="mono-font" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <p id="statusMessage" class="text-emerald-600 status-box-msg" style="background-color: var(--emerald-50); border: 1px solid var(--emerald-200);">[DEBUG] Form initialized successfully with AU 24-hour time.</p>
+                    </div>
+                </div>
+<!--                 <div style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span id="statusIndicator" class="dot-sm bg-crayonOrange" title="Orange Accent"></span>
+                    <span style="font-size: 0.75rem;" class="text-slate-500">System Indicator State</span>
+                </div> -->
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        IGlowData Clinical Cadence Portal &bull; Palette: #f78522, #BF8040, #406ABF, #BF4040, #950495
+    </footer>
+
+    <script>
+
+        // State conforming to IGlowData interface
+        let appState = {
+            message: "System operating normally across regional grid.",
+            locale: "Palmer",
+            timestamp: new Date().toLocaleTimeString('en-AU', { hour12: false }),
+            user_email: "risto@gmax.com" 
+        };
+
+        const messageInput = document.getElementById('messageInput');
+        const localeInput = document.getElementById('localeInput');
+        const timestampInput = document.getElementById('timestampInput');
+        const userEmailInput = document.getElementById('userEmailInput');
+        const jsonPreviewOutput = document.getElementById('jsonPreviewOutput');
+        const statusMessage = document.getElementById('statusMessage');
+        //const statusIndicator = document.getElementById('statusIndicator');
+
+        function init() {
+            syncFormFromState();
+            updatePreview();
+
+            messageInput.addEventListener('input', (e) => {
+                appState.message = e.target.value;
+                updatePreview();
+            });
+
+            localeInput.addEventListener('input', (e) => {
+                appState.locale = e.target.value;
+                updatePreview();
+            });
+
+            timestampInput.addEventListener('input', (e) => {
+                appState.timestamp = e.target.value;
+                updatePreview();
+            });
+        }
+
+        // Get or create a persistent anonymous ID for this browser
+        function getAnonymousId() {
+            let anonId = localStorage.getItem('glow_anon_id');
+            if (!anonId) {
+                anonId = 'anon_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+                localStorage.setItem('glow_anon_id', anonId);
+            }
+            return anonId;
+        }
+
+        function refreshTimestamp() {
+            appState.timestamp = new Date().toLocaleTimeString('en-AU', { hour12: false });
+            timestampInput.value = appState.timestamp;
+            updatePreview();
+            showStatus("Timestamp synced to current AU time.", "info");
+        }
+
+        function setLocale(loc) {
+            appState.locale = loc;
+            localeInput.value = loc;
+            updatePreview();
+        }
+
+        function syncFormFromState() {
+            messageInput.value = appState.message;
+            localeInput.value = appState.locale;
+            timestampInput.value = appState.timestamp;
+            userEmailInput.value = appState.user_email;
+        }
+
+        function updatePreview() {
+            jsonPreviewOutput.textContent = JSON.stringify(appState, null, 2);
+        }
+
+        function copyJsonToClipboard() {
+            const jsonString = JSON.stringify(appState, null, 2);
+            const textArea = document.createElement("textarea");
+            textArea.value = jsonString;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showStatus("JSON copied to clipboard successfully!", "success");
+            } catch (err) {
+                showStatus("Failed to copy JSON to clipboard.", "error");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        async function submitData() {
+            showStatus("Sending IGlowData payload to Bun API...", "info");
+            
+            const payload = {
+                message: messageInput.value,
+                locale: localeInput.value,
+                timestamp: timestampInput.value,
+                user_email: userEmailInput.value,
+                anonymous_id: getAnonymousId()
+            };
+
+            showStatus("Sending payload: ", JSON.stringify(payload || ''));
+            //console.log("Glow2page: Payload JUST before POST fetch:", JSON.stringify(payload || ''));              
+
+            try {
+                //TODO: dynamic uri!
+                const response = await fetch('http://localhost:3000/api/glow', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server returned status ${response.status}`);
+                }
+
+                const result = await response.json();
+                const msg = result.message ?? '';
+
+                showStatus("Payload processed, message from db:" + msg, "success");
+                //console.log("Glow2page: Response from Bun:", result);
+
+            } catch (error) {
+                console.error("Submission failed:", error);
+                showStatus(`Glow2page: Submission failed: ${error.message}`, "error");
+            }
+        }
+        
+        function showStatus(msg, type) {
+            statusMessage.textContent = msg || '';
+
+            if(type === 'success') {
+                statusMessage.className = "status-box-msg";
+                statusMessage.style.color = "var(--emerald-700)";
+                statusMessage.style.backgroundColor = "var(--emerald-50)";
+                statusMessage.style.border = "1px solid var(--emerald-200)";
+                //statusIndicator.className = "dot-sm bg-emerald";
+            } else if(type === 'error') {
+                statusMessage.className = "status-box-msg";
+                statusMessage.style.color = "var(--red-700)";
+                statusMessage.style.backgroundColor = "var(--red-50)";
+                statusMessage.style.border = "1px solid var(--red-200)";
+                //statusIndicator.className = "dot-sm";
+                //statusIndicator.style.backgroundColor = "#ef4444";
+            } else {
+                statusMessage.className = "status-box-msg";
+                statusMessage.style.color = "var(--blue-700)";
+                statusMessage.style.backgroundColor = "var(--blue-50)";
+                statusMessage.style.border = "1px solid var(--blue-200)";
+                //statusIndicator.className = "dot-sm bg-cadenceBlue";
+            }
+
+        }
+
+        function resetForm() {
+            let appState = {
+                message: "System operating normally across regional grid.",
+                locale: "Palmer",
+                timestamp: new Date().toLocaleTimeString('en-AU', { hour12: false }),
+                user_email: "risto@gmax.com" 
+            };
+            syncFormFromState();
+            updatePreview();
+            showStatus("Form reset to default parameters.", "info");
+        }
+
+        
+
+        window.onload = init;
+    </script>
+
+    __FLOATER__
+
+</body>
+</html>

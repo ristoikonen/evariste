@@ -1,0 +1,2855 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galois Field GF(2⁸) • Glow2 & Risukko Architecture Lab</title>
+    <meta name="description"
+        content="A clinical, precision visual laboratory for Galois Field GF(2⁸) finite arithmetic, AES cryptography S-Box generation, Cayley matrix fractals, and algebraic error correction. Built with Glow2 white background design system.">
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            /* White Background & Slate Neutrals */
+            --bg-page: #f8fafc;
+            --bg-page-alt: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-card-subtle: #f8fafc;
+            --bg-card-dark: #0d0d2b;
+            /* Dark blue background for cards */
+            --border-card: #e2e8f0;
+            --border-subtle: #f1f5f9;
+            --border-hover: #cbd5e1;
+
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+
+            /* Glow2 & Bunfetch User Accent Palette */
+            /* Cyan (Primary Accent): #38bdf8 */
+            --accent-cyan: #38bdf8;
+            --accent-cyan-hover: #0284c7;
+            --accent-cyan-light: #f0f9ff;
+            --accent-cyan-border: #bae6fd;
+            --accent-cyan-glow: rgba(56, 189, 248, 0.35);
+
+            /* Rose / Coral (Secondary Accent): #f43f5e */
+            --accent-rose: #f43f5e;
+            --accent-rose-hover: #e11d48;
+            --accent-rose-light: #fff1f2;
+            --accent-rose-border: #fecdd3;
+            --accent-rose-glow: rgba(244, 63, 94, 0.35);
+
+            /* Emerald (Success / Status): #10b981 */
+            --accent-emerald: #10b981;
+            --accent-emerald-hover: #059669;
+            --accent-emerald-light: #ecfdf5;
+            --accent-emerald-border: #a7f3d0;
+            --accent-emerald-glow: rgba(16, 185, 129, 0.35);
+
+            /* Purple (Secondary UI Tag): #a855f7 */
+            --accent-purple: #a855f7;
+            --accent-purple-hover: #9333ea;
+            --accent-purple-light: #faf5ff;
+            --accent-purple-border: #e9d5ff;
+            --accent-purple-glow: rgba(168, 85, 247, 0.35);
+
+            /* Yellow (New Accent): #f78522 */
+            --accent-yellow: #f78522;
+            --accent-yellow-hover: #ea580c;
+            --accent-yellow-light: #fff7ed;
+            --accent-yellow-border: #fed7aa;
+            --accent-yellow-glow: rgba(247, 133, 34, 0.35);
+
+            /* Shadows & Radii */
+            --radius-sm: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.25rem;
+            --card-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+            --card-shadow-hover: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-image:
+                radial-gradient(circle at 10% 5%, rgba(56, 189, 248, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 90% 20%, rgba(168, 85, 247, 0.04) 0%, transparent 45%),
+                radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        ::selection {
+            background-color: var(--accent-cyan);
+            color: white;
+        }
+
+        .mono-font {
+            font-family: var(--font-mono);
+        }
+
+        /* Card Container (Glow2 Style) */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--card-shadow);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card:hover {
+            box-shadow: var(--card-shadow-hover);
+            border-color: var(--border-hover);
+        }
+
+        /* Dots & Status Indicators (Glow2 & Risukko style) */
+        .dot {
+            width: 0.625rem;
+            height: 0.625rem;
+            border-radius: 9999px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .dot-sm {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 9999px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .bg-cyan {
+            background-color: var(--accent-cyan);
+            box-shadow: 0 0 8px var(--accent-cyan-glow);
+        }
+
+        .bg-rose {
+            background-color: var(--accent-rose);
+            box-shadow: 0 0 8px var(--accent-rose-glow);
+        }
+
+        .bg-emerald {
+            background-color: var(--accent-emerald);
+            box-shadow: 0 0 8px var(--accent-emerald-glow);
+        }
+
+        .bg-purple {
+            background-color: var(--accent-purple);
+            box-shadow: 0 0 8px var(--accent-purple-glow);
+        }
+
+        .bg-yellow {
+            background-color: var(--accent-yellow);
+            box-shadow: 0 0 8px var(--accent-yellow-glow);
+        }
+
+        /* Badge Pill (Glow2 Style) */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background-color: var(--bg-card);
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid var(--border-card);
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+            white-space: nowrap;
+        }
+
+        /* Top Sticky Header */
+        header.app-header {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-card);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .header-inner {
+            max-width: 80rem;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .brand-cluster {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-cyan-light), var(--bg-card));
+            border: 1.5px solid var(--accent-cyan);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: var(--accent-cyan-hover);
+            box-shadow: 0 2px 10px var(--accent-cyan-glow);
+        }
+
+        .brand-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .brand-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        /* Nav Pills */
+        .nav-pills {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            list-style: none;
+            overflow-x: auto;
+            padding: 2px 0;
+        }
+
+        .nav-pill {
+            color: var(--text-secondary);
+            font-size: 0.825rem;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-sm);
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .nav-pill:hover {
+            color: var(--accent-cyan-hover);
+            background-color: var(--accent-cyan-light);
+        }
+
+        .nav-pill.active {
+            color: var(--accent-cyan-hover);
+            background-color: var(--accent-cyan-light);
+            font-weight: 600;
+        }
+
+        /* Modulus Selector in Header */
+        .poly-selector-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 0.375rem 0.75rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        }
+
+        .poly-select {
+            background-color: var(--bg-card-subtle);
+            color: var(--text-primary);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-sm);
+            padding: 0.3rem 0.6rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .poly-select:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        /* Main Container */
+        main.main-content {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 2.25rem 1.5rem 5rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2.25rem;
+        }
+
+        /* Hero Banner (White Background with Glow2 Accents) */
+        .hero-banner {
+            padding: 2.5rem 2rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald), var(--accent-purple), var(--accent-yellow), var(--accent-rose));
+        }
+
+        .hero-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-title {
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .hero-desc {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.65;
+            max-width: 58rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Hero Stat Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 1.1rem 1.25rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+        }
+
+        .stat-label-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .stat-label {
+            font-size: 0.725rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+        }
+
+        .section-tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: var(--radius-sm);
+            background-color: var(--accent-cyan-light);
+            color: var(--accent-cyan-hover);
+            border: 1px solid var(--accent-cyan-border);
+        }
+
+        .section-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* SECTION 1: CALCULATOR */
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1fr 140px 1fr;
+            gap: 1.25rem;
+            align-items: stretch;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 960px) {
+            .calc-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .operand-card {
+            background-color: var(--bg-card-dark);
+            color: var(--text-light);
+            padding: 1.75rem;
+        }
+
+        .operand-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .operand-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .preset-pill {
+            background-color: var(--bg-card-subtle);
+            border: 1px solid var(--border-card);
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.725rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .preset-pill:hover {
+            background-color: var(--accent-cyan-light);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan-hover);
+        }
+
+        /* 8-Bit Interactive Switches */
+        .bit-switch-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.35rem;
+            margin-bottom: 1.25rem;
+            background-color: var(--bg-card-subtle);
+            padding: 0.75rem 0.5rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-card);
+        }
+
+        .bit-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.375rem;
+            flex: 1;
+        }
+
+        .bit-label {
+            font-family: var(--font-mono);
+            font-size: 0.675rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .bit-btn {
+            width: 100%;
+            height: 38px;
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-sm);
+            background-color: #ffffff;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .bit-btn:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan-hover);
+        }
+
+        .bit-btn.active {
+            background: linear-gradient(135deg, var(--accent-cyan), #0284c7);
+            color: #ffffff;
+            border-color: #0284c7;
+            box-shadow: 0 2px 8px var(--accent-cyan-glow);
+        }
+
+        /* Inputs */
+        .input-pair {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        label.field-label {
+            display: block;
+            font-size: 0.725rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
+        }
+
+        input.text-field {
+            width: 100%;
+            background-color: var(--bg-card-subtle);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 0.625rem 0.875rem;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input.text-field:focus {
+            border-color: var(--accent-cyan);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        .slider-control {
+            width: 100%;
+            accent-color: var(--accent-cyan);
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .poly-card-badge {
+            background-color: var(--bg-card-subtle);
+            border: 1px dashed var(--border-hover);
+            border-radius: var(--radius-sm);
+            padding: 0.625rem 0.875rem;
+            font-family: var(--font-mono);
+            font-size: 0.825rem;
+            color: var(--accent-cyan-hover);
+            min-height: 38px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Operators Column */
+        .op-column {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .op-button {
+            padding: 0.65rem 0.75rem;
+            border-radius: var(--radius-md);
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-card);
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+
+        .op-button:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan-hover);
+            background-color: var(--accent-cyan-light);
+        }
+
+        .op-button.active {
+            background: linear-gradient(135deg, var(--accent-cyan), #0284c7);
+            color: #ffffff;
+            border-color: #0284c7;
+            box-shadow: 0 4px 12px var(--accent-cyan-glow);
+        }
+
+        /* Result Card */
+        .result-panel {
+            padding: 2rem;
+            background: #ffffff;
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald));
+        }
+
+        .result-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .result-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent-cyan-hover);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .result-display-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .res-box {
+            background-color: var(--bg-card-subtle);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 0.875rem 1.1rem;
+        }
+
+        .res-box-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .res-box-val {
+            font-family: var(--font-mono);
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .res-poly-box {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--accent-cyan-hover);
+            background-color: var(--accent-cyan-light);
+            border: 1px solid var(--accent-cyan-border);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* Drawer Tabs */
+        .drawer-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-card);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.825rem;
+            font-weight: 600;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background-color: var(--bg-card-subtle);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-cyan-hover);
+            background-color: var(--accent-cyan-light);
+        }
+
+        .drawer-body {
+            font-family: var(--font-mono);
+            font-size: 0.825rem;
+            background-color: var(--bg-card-subtle);
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-card);
+            overflow-x: auto;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .peasant-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .peasant-table th {
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-card);
+            background-color: #ffffff;
+        }
+
+        .peasant-table td {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .peasant-table tr.step-active {
+            background-color: var(--accent-yellow-light);
+            color: var(--accent-yellow-hover);
+        }
+
+        /* SECTION 2: CAYLEY MATRIX */
+        .cayley-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.5rem;
+            padding: 1.75rem;
+        }
+
+        @media (max-width: 1024px) {
+            .cayley-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cayley-toolbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .canvas-frame {
+            background: #ffffff;
+            border: 2px solid var(--border-card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            display: inline-block;
+        }
+
+        #cayleyCanvas {
+            image-rendering: pixelated;
+            display: block;
+            cursor: crosshair;
+        }
+
+        /* SECTION 3: GENERATOR ORBIT WHEEL */
+        .orbit-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.5rem;
+            padding: 1.75rem;
+            align-items: center;
+        }
+
+        @media (max-width: 960px) {
+            .orbit-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        #orbitCanvas {
+            max-width: 100%;
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-card);
+        }
+
+        /* SECTION 4: AES S-BOX */
+        .sbox-card {
+            padding: 1.75rem;
+        }
+
+        .pipeline-flex {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+            flex-wrap: wrap;
+        }
+
+        .pipe-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            text-align: center;
+            min-width: 150px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        }
+
+        .pipe-arrow {
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .sbox-table-scroll {
+            overflow-x: auto;
+            background-color: var(--bg-card-subtle);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            border: 1px solid var(--border-card);
+        }
+
+        .sbox-table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            font-family: var(--font-mono);
+            font-size: 0.775rem;
+        }
+
+        .sbox-table th {
+            padding: 0.35rem 0.5rem;
+            color: var(--accent-cyan-hover);
+            border: 1px solid var(--border-card);
+            background-color: #ffffff;
+        }
+
+        .sbox-table td {
+            padding: 0.35rem 0.5rem;
+            border: 1px solid var(--border-card);
+            text-align: center;
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .sbox-table td:hover {
+            background-color: var(--accent-cyan);
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .sbox-table td.highlighted {
+            background-color: var(--accent-purple);
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* SECTION 5: STRATEGY #3 SELF-HEALING */
+        .heal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .heal-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .channel-preview-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .chan-card {
+            background-color: var(--bg-card-subtle);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .chan-card.corrupted {
+            border-color: var(--accent-rose);
+            background-color: var(--accent-rose-light);
+            box-shadow: 0 0 12px var(--accent-rose-glow);
+        }
+
+        .chan-swatch {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            margin: 0 auto 0.5rem;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
+        }
+
+        .syndrome-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.875rem 1.1rem;
+            border-radius: var(--radius-md);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        .syndrome-badge.pristine {
+            background-color: var(--accent-emerald-light);
+            color: #047857;
+            border: 1px solid var(--accent-emerald-border);
+        }
+
+        .syndrome-badge.repaired {
+            background-color: var(--accent-cyan-light);
+            color: #0284c7;
+            border: 1px solid var(--accent-cyan-border);
+        }
+
+        .syndrome-badge.corrupted {
+            background-color: var(--accent-rose-light);
+            color: #b91c1c;
+            border: 1px solid var(--accent-rose-border);
+        }
+
+        /* Buttons (Glow2 Style) */
+        .btn {
+            font-weight: 600;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-cyan {
+            background-color: var(--accent-cyan);
+            color: #ffffff;
+            box-shadow: 0 4px 12px var(--accent-cyan-glow);
+        }
+
+        .btn-cyan:hover {
+            background-color: var(--accent-cyan-hover);
+        }
+
+        .btn-rose {
+            background-color: var(--accent-rose-light);
+            color: var(--accent-rose);
+            border-color: var(--accent-rose-border);
+        }
+
+        .btn-rose:hover {
+            background-color: var(--accent-rose);
+            color: #ffffff;
+        }
+
+        .btn-emerald {
+            background-color: var(--accent-emerald-light);
+            color: #047857;
+            border-color: var(--accent-emerald-border);
+        }
+
+        .btn-emerald:hover {
+            background-color: var(--accent-emerald);
+            color: #ffffff;
+        }
+
+        .btn-slate {
+            background-color: var(--bg-card);
+            border-color: var(--border-card);
+            color: var(--text-secondary);
+        }
+
+        .btn-slate:hover {
+            background-color: var(--bg-card-subtle);
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        footer.app-footer {
+            background-color: #ffffff;
+            border-top: 1px solid var(--border-card);
+            padding: 1.75rem 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--accent-cyan-hover);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+        <div class="header-inner">
+            <a href="/" class="brand-cluster">
+                <div class="brand-icon">𝔽₂₈</div>
+                <div>
+                    <div class="brand-title">Évariste • Galois Field GF(2⁸)</div>
+                    <div class="brand-sub">Glow2 & Risukko Precision Architecture</div>
+                </div>
+            </a>
+
+            <!-- Navigation Pills -->
+            <ul class="nav-pills">
+                <li><a href="#calculator" class="nav-pill active">Calculator</a></li>
+                <li><a href="#cayley" class="nav-pill">256×256 Matrix</a></li>
+                <li><a href="#orbit" class="nav-pill">Cyclic Orbit (αᵏ)</a></li>
+                <li><a href="#aessbox" class="nav-pill">AES S-Box</a></li>
+                <li><a href="#selfhealing" class="nav-pill">Strategy #3 Lab</a></li>
+                <li><a href="#stego" class="nav-pill">Steganography</a></li>
+            </ul>
+
+            <!-- Polynomial Preset Selector -->
+            <div class="poly-selector-wrap">
+                <span class="stat-label">Modulus P(x):</span>
+                <select id="polySelect" class="poly-select">
+                    <option value="0x11b" selected>0x11B • AES / Rijndael (x⁸ + x⁴ + x³ + x + 1)</option>
+                    <option value="0x11d">0x11D • Reed-Solomon / QR (x⁸ + x⁴ + x³ + x² + 1)</option>
+                    <option value="0x187">0x187 • RAID-6 / x264 (x⁸ + x⁷ + x² + x + 1)</option>
+                    <option value="0x12d">0x12D • GF-301 (x⁸ + x⁵ + x³ + x² + 1)</option>
+                    <option value="0x14d">0x14D • GF-333 (x⁸ + x⁶ + x³ + x² + 1)</option>
+                    <option value="0x15f">0x15F • GF-351 (x⁸ + x⁶ + x⁴ + x³ + x² + x + 1)</option>
+                    <option value="0x163">0x163 • GF-355 (x⁸ + x⁶ + x⁵ + x + 1)</option>
+                    <option value="0x1a9">0x1A9 • GF-425 (x⁸ + x⁷ + x⁵ + x³ + 1)</option>
+                    <option value="0x1f5">0x1F5 • GF-501 (x⁸ + x⁷ + x⁶ + x⁵ + x⁴ + x² + 1)</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <!-- Hero Section (Glow2 White Card with Risukko Accent Palette) -->
+        <section class="hero-banner">
+            <div class="hero-meta-row">
+                <span class="badge"><span class="dot bg-cyan"></span><span class="mono-font">risukko.com / evariste
+                        engine</span></span>
+                <span class="badge"><span class="dot bg-emerald"></span><span class="mono-font">GF(2⁸) Finite Field •
+                        256 Elements</span></span>
+                <span class="badge"><span class="dot bg-purple"></span><span class="mono-font">Quotient Ring 𝔽₂[x] /
+                        ⟨P(x)⟩</span></span>
+                <span class="badge"><span class="dot bg-yellow"></span><span class="mono-font">Telemetry: Bun 1.4.2
+                        Native</span></span>
+            </div>
+
+            <h1 class="hero-title">Galois Field GF(2⁸) / 𝔽₂₅₆ Laboratory</h1>
+            <p class="hero-desc">
+                An interactive mathematical workbench exploring finite field arithmetic over 8-bit bytes ($2^8 = 256$
+                elements).
+                Built on the quotient ring $\mathbb{F}_2[x] / \langle P(x) \rangle$, this exact algebraic structure
+                forms the bedrock of
+                <strong>AES-128/256 symmetric encryption</strong>, <strong>Reed-Solomon error correction (QR codes &
+                    storage arrays)</strong>, and <strong>algebraic self-healing steganography</strong>.
+            </p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label-wrap">
+                        <span class="dot-sm bg-cyan"></span>
+                        <span class="stat-label">Field Cardinality</span>
+                    </div>
+                    <div class="stat-value">2⁸ = 256 Elements</div>
+                    <div class="stat-sub">Byte spectrum 0x00 to 0xFF</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label-wrap">
+                        <span class="dot-sm bg-emerald"></span>
+                        <span class="stat-label">Field Characteristic</span>
+                    </div>
+                    <div class="stat-value">p = 2 (Carryless)</div>
+                    <div class="stat-sub">a ⊕ a = 0; Addition is XOR</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label-wrap">
+                        <span class="dot-sm bg-purple"></span>
+                        <span class="stat-label">Multiplicative Group</span>
+                    </div>
+                    <div class="stat-value">𝔽₂₈* ≅ ℤ₂₅₅</div>
+                    <div class="stat-sub">Cyclic group of order 255</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label-wrap">
+                        <span class="dot-sm bg-yellow"></span>
+                        <span class="stat-label">Active Modulus P(x)</span>
+                    </div>
+                    <div class="stat-value" id="heroPolyFormula">x⁸ + x⁴ + x³ + x + 1</div>
+                    <div class="stat-sub" id="heroPolyHex">0x11B (283 decimal)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1: CALCULATOR -->
+        <section id="calculator">
+            <div class="section-header">
+                <div>
+                    <h2><span class="section-tag">01</span>!. Finite Field Arithmetic Calculator</h2>
+                    <p class="section-sub">Real-time bit-level evaluation of addition, carryless multiplication,
+                        inversion, and division</p>
+                </div>
+                <span class="badge"><span class="dot-sm bg-cyan"></span><span class="mono-font">Active Engine: AES
+                        Modulus</span></span>
+            </div>
+
+            <div class="calc-grid">
+                <!-- Operand A -->
+                <div class="card operand-card">
+                    <div class="operand-head">
+                        <span class="operand-title">
+                            <span class="dot-sm bg-cyan"></span> Operand A
+                        </span>
+                        <div style="display: flex; gap: 0.35rem;">
+                            <button class="preset-pill" onclick="setOperandA(0x57)">0x57 (AES)</button>
+                            <button class="preset-pill" onclick="setOperandA(0x02)">0x02 (x)</button>
+                            <button class="preset-pill" onclick="setOperandA(0xFF)">0xFF</button>
+                        </div>
+                    </div>
+
+                    <!-- 8-Bit Switchboard -->
+                    <div class="bit-switch-row" id="bitGroupA">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="input-pair">
+                        <div>
+                            <label class="field-label" for="inputAHex">Hex (0x)</label>
+                            <input type="text" id="inputAHex" class="text-field" value="0x57" maxlength="4">
+                        </div>
+                        <div>
+                            <label class="field-label" for="inputADec">Decimal (0-255)</label>
+                            <input type="number" id="inputADec" class="text-field" value="87" min="0" max="255">
+                        </div>
+                    </div>
+
+                    <input type="range" id="sliderA" class="slider-control" min="0" max="255" value="87">
+
+                    <div class="poly-card-badge" id="polyA">x⁶ + x⁴ + x² + x + 1</div>
+                </div>
+
+                <!-- Operators Column -->
+                <div class="op-column">
+                    <button class="op-button" data-op="add" title="Addition (Bitwise XOR)">
+                        <span>⊕</span> Add
+                    </button>
+                    <button class="op-button" data-op="sub" title="Subtraction (Identical to Addition in GF(2))">
+                        <span>⊖</span> Sub
+                    </button>
+                    <button class="op-button active" data-op="mul" title="Galois Field Multiplication (Modulo P(x))">
+                        <span>⊗</span> Multiply
+                    </button>
+                    <button class="op-button" data-op="div" title="Galois Field Division (A * B⁻¹)">
+                        <span>⊘</span> Divide
+                    </button>
+                    <button class="op-button" data-op="inv" title="Multiplicative Inverse (A⁻¹)">
+                        <span>A⁻¹</span> Inverse
+                    </button>
+                    <button class="op-button" data-op="pow" title="Exponentiation (Aⁿ)">
+                        <span>Aⁿ</span> Power
+                    </button>
+                </div>
+
+                <!-- Operand B -->
+                <div class="card operand-card" id="cardOperandB">
+                    <div class="operand-head">
+                        <span class="operand-title">
+                            <span class="dot-sm bg-purple"></span> Operand B
+                        </span>
+                        <div style="display: flex; gap: 0.35rem;">
+                            <button class="preset-pill" onclick="setOperandB(0x83)">0x83 (AES)</button>
+                            <button class="preset-pill" onclick="setOperandB(0x03)">0x03 (x+1)</button>
+                            <button class="preset-pill" onclick="setOperandB(0x2A)">0x2A (42)</button>
+                        </div>
+                    </div>
+
+                    <!-- 8-Bit Switchboard -->
+                    <div class="bit-switch-row" id="bitGroupB">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="input-pair">
+                        <div>
+                            <label class="field-label" for="inputBHex">Hex (0x)</label>
+                            <input type="text" id="inputBHex" class="text-field" value="0x83" maxlength="4">
+                        </div>
+                        <div>
+                            <label class="field-label" for="inputBDec">Decimal (0-255)</label>
+                            <input type="number" id="inputBDec" class="text-field" value="131" min="0" max="255">
+                        </div>
+                    </div>
+
+                    <input type="range" id="sliderB" class="slider-control" min="0" max="255" value="131">
+
+                    <div class="poly-card-badge" id="polyB">x⁷ + x + 1</div>
+                </div>
+            </div>
+
+            <!-- Result Panel -->
+            <div class="result-panel">
+                <div class="result-header-row">
+                    <span class="result-title" id="operationTitle">Operand A ⊗ Operand B (GF Multiplication)</span>
+                    <span class="badge"><span class="dot-sm bg-cyan"></span><span class="mono-font"
+                            id="operationEquation">0x57 ⊗ 0x83</span></span>
+                </div>
+
+                <div class="result-display-grid">
+                    <div class="res-box">
+                        <div class="res-box-label"><span class="dot-sm bg-cyan"></span> Hexadecimal</div>
+                        <div class="res-box-val" id="resultHex">0xC1</div>
+                    </div>
+                    <div class="res-box">
+                        <div class="res-box-label"><span class="dot-sm bg-emerald"></span> Decimal Value</div>
+                        <div class="res-box-val" id="resultDec">193</div>
+                    </div>
+                    <div class="res-box">
+                        <div class="res-box-label"><span class="dot-sm bg-purple"></span> 8-Bit Binary</div>
+                        <div class="res-box-val" id="resultBin">11000001</div>
+                    </div>
+                    <div class="res-box">
+                        <div class="res-box-label"><span class="dot-sm bg-yellow"></span> Group Exponent (αᵏ)</div>
+                        <div class="res-box-val" id="resultExp">α¹³⁷</div>
+                    </div>
+                </div>
+
+                <div class="res-poly-box" id="resultPoly">Polynomial: x⁷ + x⁶ + 1</div>
+
+                <!-- Step-by-Step Educational Drawer -->
+                <div class="drawer-tabs">
+                    <button class="tab-btn active" data-tab="peasant">Peasant Algorithm (Russian Shift-and-Add)</button>
+                    <button class="tab-btn" data-tab="logexp">Cyclic Log / Antilog Lookup</button>
+                    <button class="tab-btn" data-tab="theory">Algebraic Ring Formulation</button>
+                </div>
+
+                <div class="drawer-body" id="drawerContent">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: 256x256 CAYLEY MATRIX -->
+        <section id="cayley">
+            <div class="section-header">
+                <div>
+                    <h2><span class="section-tag">02</span> 256×256 Cayley Matrix & Symmetries</h2>
+                    <p class="section-sub">Visualizing global field symmetries, Latin square permutation, and Sierpinski
+                        XOR fractals</p>
+                </div>
+                <span class="badge"><span class="dot-sm bg-emerald"></span><span class="mono-font">65,536 Coordinate
+                        Elements</span></span>
+            </div>
+
+            <div class="card cayley-layout">
+                <div>
+                    <div class="cayley-toolbar">
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-slate active-cayley-btn" id="btnCayleyMul"
+                                onclick="setCayleyMode('mul')">⊗ Multiplication Table</button>
+                            <button class="btn btn-slate" id="btnCayleyAdd" onclick="setCayleyMode('add')">⊕ Addition
+                                (XOR) Table</button>
+                            <button class="btn btn-slate" id="btnCayleyDiv" onclick="setCayleyMode('div')">⊘ Division
+                                Table</button>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <span class="stat-label">Palette:</span>
+                            <select id="paletteSelect" class="poly-select" onchange="renderCayleyCanvas()">
+                                <option value="glow2">Glow2 & Bunfetch Palette</option>
+                                <option value="cadence">Cadence Blue & Emerald</option>
+                                <option value="thermal">Solar Thermal</option>
+                                <option value="mono">Monochrome High-Contrast</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="canvas-frame">
+                        <canvas id="cayleyCanvas" width="512" height="512"
+                            style="width: 512px; height: 512px;"></canvas>
+                    </div>
+                    <p class="stat-sub" style="margin-top: 0.75rem;">Move cursor over the matrix to inspect $(X, Y) \to
+                        Z$ live</p>
+                </div>
+
+                <!-- Inspector Sidebar -->
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="card" style="padding: 1.25rem;">
+                        <div class="stat-label" style="margin-bottom: 0.75rem;">Coordinate Inspector</div>
+                        <div style="font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.8;">
+                            <div>X (Row): <strong id="inspX" style="color: var(--accent-cyan-hover);">0x57 (87)</strong>
+                            </div>
+                            <div>Y (Col): <strong id="inspY" style="color: var(--accent-purple);">0x83 (131)</strong>
+                            </div>
+                            <div
+                                style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border-card);">
+                                Value Z: <strong id="inspZ"
+                                    style="color: var(--accent-emerald-hover); font-size: 1.25rem;">0xC1 (193)</strong>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);" id="inspPoly">x⁷ + x⁶ + 1</div>
+                        </div>
+                        <button class="btn btn-cyan" style="width: 100%; margin-top: 1rem;"
+                            onclick="copyInspectorToCalc()">Send to Calculator</button>
+                    </div>
+
+                    <div class="card" style="padding: 1.25rem;">
+                        <div class="stat-label" style="margin-bottom: 0.5rem;">Algebraic Structure</div>
+                        <p id="cayleyInsightText"
+                            style="font-size: 0.825rem; color: var(--text-secondary); line-height: 1.55;">
+                            <strong>Multiplication Latin Square:</strong> Because GF(2⁸) has no zero divisors, every row
+                            and column in the non-zero submatrix (1..255) contains every element from 1 to 255 exactly
+                            once.
+                        </p>
+                    </div>
+
+                    <div class="card" style="padding: 1.25rem;">
+                        <div class="stat-label" style="margin-bottom: 0.5rem;">Upper 8×8 Subgrid</div>
+                        <div id="subgridPreview"
+                            style="font-family: var(--font-mono); font-size: 0.725rem; color: var(--text-secondary);">
+                            Rendering numerical subgrid...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CYCLIC GROUP ORBIT WHEEL -->
+        <section id="orbit">
+            <div class="section-header">
+                <div>
+                    <h2><span class="section-tag">03</span> Generator Orbit & Cyclic Group Wheel (αᵏ)</h2>
+                    <p class="section-sub">Every non-zero element in 𝔽₂₈* is generated by a primitive root generator α
+                    </p>
+                </div>
+                <span class="badge"><span class="dot-sm bg-purple"></span><span class="mono-font">Cyclic Group
+                        ℤ₂₅₅</span></span>
+            </div>
+
+            <div class="card orbit-layout">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <canvas id="orbitCanvas" width="460" height="460" style="width: 460px; height: 460px;"></canvas>
+
+                    <div
+                        style="margin-top: 1rem; display: flex; align-items: center; gap: 0.75rem; width: 100%; max-width: 460px;">
+                        <button class="btn btn-cyan" id="btnPlayOrbit" onclick="toggleOrbitAnimation()">▶ Play
+                            Orbit</button>
+                        <input type="range" id="orbitSlider" class="slider-control" style="margin-bottom: 0;" min="0"
+                            max="254" value="0" oninput="setOrbitK(Number(this.value))">
+                        <span
+                            style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan-hover); min-width: 55px;"
+                            id="orbitKLabel">k = 0</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="card" style="padding: 1.25rem;">
+                        <div class="stat-label" style="margin-bottom: 0.5rem;">Current Orbit Position</div>
+                        <div style="font-family: var(--font-mono); font-size: 1.1rem; line-height: 1.8;">
+                            <div>Power: <strong id="orbitPowerText" style="color: var(--accent-cyan-hover);">α⁰</strong>
+                            </div>
+                            <div>Value (Hex): <strong id="orbitHexText"
+                                    style="color: var(--text-primary);">0x01</strong></div>
+                            <div>Value (Dec): <strong id="orbitDecText"
+                                    style="color: var(--accent-emerald-hover);">1</strong></div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);" id="orbitPolyText">Polynomial: 1
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding: 1.25rem;">
+                        <div class="stat-label" style="margin-bottom: 0.5rem;">Multiplicative Order</div>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.6rem;">
+                            Smallest $k > 0$ such that $x^k = 1$. By Lagrange's theorem, orders divide 255.
+                        </p>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <input type="number" id="orderInput" class="text-field" style="width: 80px;" value="2"
+                                min="1" max="255">
+                            <button class="btn btn-slate" onclick="calcOrderForInput()">Check</button>
+                        </div>
+                        <div id="orderResultText"
+                            style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan-hover);">
+                            Order of 0x02: 51 (Subgroup)
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding: 1.25rem;">
+                        <div class="stat-label" style="margin-bottom: 0.5rem;">Primitive Generators (Order 255)</div>
+                        <div id="generatorListText"
+                            style="font-family: var(--font-mono); font-size: 0.725rem; color: var(--text-muted); max-height: 100px; overflow-y: auto;">
+                            Calculating generators...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: AES S-BOX -->
+        <section id="aessbox">
+            <div class="section-header">
+                <div>
+                    <h2><span class="section-tag">04</span> Real-World Cryptography: AES S-Box Pipeline</h2>
+                    <p class="section-sub">FIPS 197 standard non-linear substitution box derived directly from GF(2⁸)
+                        multiplicative inverses</p>
+                </div>
+                <span class="badge"><span class="dot-sm bg-yellow"></span><span class="mono-font">FIPS 197
+                        Certified</span></span>
+            </div>
+
+            <div class="card sbox-card">
+                <div class="pipeline-flex">
+                    <div class="pipe-node">
+                        <div class="stat-label">1. Input Byte</div>
+                        <input type="text" id="sboxInputByte" class="text-field"
+                            style="width: 75px; text-align: center; margin-top: 0.35rem;" value="0x53" maxlength="4"
+                            onchange="updateSBoxPipeline()">
+                        <div style="font-family: var(--font-mono); font-size: 0.725rem; color: var(--text-muted); margin-top: 0.25rem;"
+                            id="sboxInputDec">83 dec</div>
+                    </div>
+
+                    <div class="pipe-arrow">➔</div>
+
+                    <div class="pipe-node">
+                        <div class="stat-label">2. GF(2⁸) Inversion</div>
+                        <div style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; color: var(--accent-purple); margin: 0.35rem 0;"
+                            id="sboxInvResult">0xCA</div>
+                        <div style="font-size: 0.725rem; color: var(--text-muted);">a · a⁻¹ = 1 mod 0x11B</div>
+                    </div>
+
+                    <div class="pipe-arrow">➔</div>
+
+                    <div class="pipe-node">
+                        <div class="stat-label">3. Affine Matrix + 0x63</div>
+                        <div
+                            style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-yellow-hover); margin: 0.35rem 0; font-weight: 600;">
+                            Linear Bit Mix</div>
+                        <div style="font-size: 0.725rem; color: var(--text-muted);">⊕ 0b01100011</div>
+                    </div>
+
+                    <div class="pipe-arrow">➔</div>
+
+                    <div class="pipe-node"
+                        style="border-color: var(--accent-emerald); background-color: var(--accent-emerald-light);">
+                        <div class="stat-label" style="color: #047857;">4. AES S-Box Byte</div>
+                        <div style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 800; color: #047857; margin: 0.2rem 0;"
+                            id="sboxFinalResult">0xED</div>
+                        <div style="font-size: 0.725rem; color: #059669; font-weight: 600;">FIPS 197 Match</div>
+                    </div>
+                </div>
+
+                <div class="sbox-table-scroll">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <span class="stat-sub">Complete 16×16 AES S-Box Matrix (Click any byte to trace):</span>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-cyan" onclick="toggleSBoxMode(false)" id="btnFwdSBox">Forward
+                                S-Box</button>
+                            <button class="btn btn-slate" onclick="toggleSBoxMode(true)" id="btnInvSBox">Inverse
+                                S-Box</button>
+                        </div>
+                    </div>
+                    <table class="sbox-table" id="sboxTable">
+                        <!-- Populated by JS -->
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: STRATEGY #3 SELF-HEALING LAB -->
+        <section id="selfhealing">
+            <div class="section-header">
+                <div>
+                    <h2><span class="section-tag">05</span> Strategy #3 Self-Healing Diagnostic Lab</h2>
+                    <p class="section-sub">Real-time algebraic error detection and 100% single-channel reconstruction
+                        via Galois checksum loop</p>
+                </div>
+                <span class="badge"><span class="dot-sm bg-rose"></span><span class="mono-font">Strategy #3 Invariant: R
+                        ⊕ G = B</span></span>
+            </div>
+
+            <div class="heal-grid">
+                <!-- Encoding & Noise Injection -->
+                <div class="card" style="padding: 1.75rem;">
+                    <div class="operand-head">
+                        <span class="operand-title"><span class="dot-sm bg-cyan"></span> Secret Channel Encoder</span>
+                        <span class="stat-sub">R = Z, G = Z ⊗ 42, B = R ⊕ G</span>
+                    </div>
+
+                    <div style="margin-bottom: 1.25rem;">
+                        <label class="field-label" for="secretInputByte">Secret Payload Byte (0-255 or ASCII
+                            Char)</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="number" id="secretInputByte" class="text-field" style="flex: 1;" value="168"
+                                min="0" max="255" oninput="updateSelfHealingPipeline()">
+                            <input type="text" id="secretCharInput" class="text-field"
+                                style="width: 70px; text-align: center;" value="§" maxlength="1"
+                                oninput="updateCharSelfHealing(this.value)">
+                        </div>
+                    </div>
+
+                    <!-- 3 Color Channels -->
+                    <div class="channel-preview-row">
+                        <div class="chan-card" id="boxR">
+                            <div class="stat-label">Channel R (Rose)</div>
+                            <div class="chan-swatch" id="swatchR" style="background-color: var(--accent-rose);"></div>
+                            <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700;" id="valR">
+                                0xA8 (168)</div>
+                        </div>
+
+                        <div class="chan-card" id="boxG">
+                            <div class="stat-label">Channel G (Emerald)</div>
+                            <div class="chan-swatch" id="swatchG" style="background-color: var(--accent-emerald);">
+                            </div>
+                            <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700;" id="valG">
+                                0xD3 (211)</div>
+                        </div>
+
+                        <div class="chan-card" id="boxB">
+                            <div class="stat-label">Channel B (Cyan)</div>
+                            <div class="chan-swatch" id="swatchB" style="background-color: var(--accent-cyan);"></div>
+                            <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700;" id="valB">
+                                0x7B (123)</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-label" style="margin-bottom: 0.5rem;">Inject Channel Transmission Noise:</div>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-rose" onclick="injectCorruption('R')">⚡ Corrupt Channel R</button>
+                        <button class="btn btn-rose" onclick="injectCorruption('G')">⚡ Corrupt Channel G</button>
+                        <button class="btn btn-rose" onclick="injectCorruption('B')">⚡ Corrupt Channel B</button>
+                        <button class="btn btn-slate" onclick="resetCorruption()">↺ Reset Clean</button>
+                    </div>
+                </div>
+
+                <!-- Algebraic Syndrome Solver -->
+                <div class="card" style="padding: 1.75rem;">
+                    <div class="operand-head">
+                        <span class="operand-title"><span class="dot-sm bg-emerald"></span> Algebraic Syndrome
+                            Solver</span>
+                        <span class="stat-sub">oksaDecoder.ts Verification</span>
+                    </div>
+
+                    <div
+                        style="background-color: var(--bg-card-subtle); border-radius: var(--radius-md); padding: 1.1rem; border: 1px solid var(--border-card); font-family: var(--font-mono); font-size: 0.825rem; line-height: 1.8;">
+                        <div>1. Invariant Equilibrium: <span id="synCheck1"
+                                style="color: var(--accent-emerald-hover); font-weight: 600;">R ⊕ G = B (Pass)</span>
+                        </div>
+                        <div>2. Red Repair Path: <span id="synCheck2" style="color: var(--text-muted);">(G ⊘ 42) ⊕ G =
+                                B</span></div>
+                        <div>3. Green Repair Path: <span id="synCheck3" style="color: var(--text-muted);">R ⊕ (R ⊗ 42) =
+                                B</span></div>
+                    </div>
+
+                    <div class="syndrome-badge pristine" id="syndromeBadge">
+                        <span class="dot-sm bg-emerald"></span> Channels Pristine: Exact Algebraic Equilibrium
+                    </div>
+
+                    <div
+                        style="margin-top: 1.25rem; background-color: var(--bg-card-subtle); border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 1.25rem;">
+                        <div class="stat-label">Restored Secret Symbol</div>
+                        <div style="display: flex; align-items: baseline; gap: 0.75rem; margin-top: 0.25rem;">
+                            <span
+                                style="font-family: var(--font-mono); font-size: 2.2rem; font-weight: 800; color: #047857;"
+                                id="healedByteVal">168</span>
+                            <span
+                                style="font-family: var(--font-mono); font-size: 1.25rem; color: var(--accent-cyan-hover);"
+                                id="healedHexVal">0xA8</span>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);" id="healStatusMsg">100%
+                                Bit-Accurate Restoration</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: STEGANOGRAPHY -->
+        <section id="stego">
+            <div class="section-header">
+                <div>
+                    <h2><span class="section-tag">06</span> Chaotic Galois Steganography Lab</h2>
+                    <p class="section-sub">Permuting visual pixel domains uniformly across 0-255 using Galois
+                        multiplication vectors (galois.txt)</p>
+                </div>
+                <span class="badge"><span class="dot-sm bg-yellow"></span><span class="mono-font">Reversible
+                        Permutation</span></span>
+            </div>
+
+            <div class="card" style="padding: 1.75rem;">
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: center;">
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <div style="text-align: center;">
+                            <canvas id="stegoOrigCanvas" width="160" height="160"
+                                style="border: 1px solid var(--border-card); border-radius: var(--radius-sm);"></canvas>
+                            <div class="stat-sub" style="margin-top: 0.35rem;">Pristine Carrier</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <canvas id="stegoScrambledCanvas" width="160" height="160"
+                                style="border: 1px solid var(--border-card); border-radius: var(--radius-sm);"></canvas>
+                            <div class="stat-sub" style="margin-top: 0.35rem; color: var(--accent-yellow-hover);">Galois
+                                Scrambled (Noise)</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <canvas id="stegoRecoveredCanvas" width="160" height="160"
+                                style="border: 1px solid var(--border-card); border-radius: var(--radius-sm);"></canvas>
+                            <div class="stat-sub" style="margin-top: 0.35rem; color: #047857;">Restored (Bit-Exact)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="stat-label">Pipeline Telemetry</div>
+                        <p
+                            style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.5rem 0 1rem; line-height: 1.6;">
+                            Using a deterministic logistic chaos stream $x_{n+1} = r \cdot x_n \cdot (1 - x_n)$ and
+                            Galois multiplication $c_i = (p_i \oplus k_i) \otimes 0x03$ to camouflage payloads into
+                            natural visual noise profiles without rounding errors or value overflows (>255).
+                        </p>
+
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                            <button class="btn btn-cyan" onclick="runStegoScramble()">Scramble Pattern</button>
+                            <button class="btn btn-emerald" onclick="runStegoDescramble()">Descramble (Restore)</button>
+                            <button class="btn btn-slate" onclick="generateNewStegoPattern()">New Pattern</button>
+                        </div>
+
+                        <div
+                            style="background-color: var(--bg-card-subtle); border-radius: var(--radius-md); padding: 0.875rem 1rem; border: 1px solid var(--border-card); font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.6;">
+                            <div>Carrier Size: <strong>160 × 160 (25,600 Pixels)</strong></div>
+                            <div>Multiplier: <strong>0x03 (Galois Vector)</strong></div>
+                            <div>Reversibility: <strong style="color: var(--accent-emerald-hover);">100%
+                                    Bit-Identical</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <p>
+            Évariste Galois Finite Field Engine • Glow2 & Risukko Architecture •
+            <a href="/glow2">Clinical Cadence Portal</a> •
+            <a href="/">Personal Profile</a> •
+            <a href="/risukko_architecture_explorer.html">Risukko Explorer</a>
+        </p>
+    </footer>
+
+    <!-- Galois Engine Script -->
+    <script>
+        /**
+         * ========================================================================
+         * CLIENT-SIDE GALOIS FIELD GF(2^8) ARITHMETIC CORE
+         * ========================================================================
+         */
+        class GaloisField {
+            constructor(poly = 0x11b, gen = 0x03) {
+                this.poly = poly;
+                this.gen = gen;
+                this.exp = new Uint8Array(512);
+                this.log = new Uint8Array(256);
+                this.inv = new Uint8Array(256);
+                this.init();
+            }
+
+            init() {
+                this.exp.fill(0);
+                this.log.fill(0);
+                this.inv.fill(0);
+
+                let x = 1;
+                for (let i = 0; i < 255; i++) {
+                    this.exp[i] = x;
+                    this.log[x] = i;
+                    x = this.peasantMul(x, this.gen);
+                }
+                for (let i = 255; i < 512; i++) {
+                    this.exp[i] = this.exp[i - 255];
+                }
+
+                this.inv[0] = 0;
+                for (let a = 1; a < 256; a++) {
+                    const logA = this.log[a];
+                    const invLog = (255 - logA) % 255;
+                    this.inv[a] = this.exp[invLog];
+                }
+            }
+
+            peasantMul(a, b) {
+                let p = 0;
+                let curA = a & 0xff;
+                let curB = b & 0xff;
+                for (let i = 0; i < 8; i++) {
+                    if (curB & 1) p ^= curA;
+                    const hi = (curA & 0x80) !== 0;
+                    curA = (curA << 1) & 0xff;
+                    if (hi) curA ^= (this.poly & 0xff);
+                    curB >>= 1;
+                }
+                return p & 0xff;
+            }
+
+            add(a, b) {
+                return (a ^ b) & 0xff;
+            }
+
+            sub(a, b) {
+                return (a ^ b) & 0xff;
+            }
+
+            mul(a, b) {
+                const ca = a & 0xff;
+                const cb = b & 0xff;
+                if (ca === 0 || cb === 0) return 0;
+                return this.exp[this.log[ca] + this.log[cb]];
+            }
+
+            div(a, b) {
+                const ca = a & 0xff;
+                const cb = b & 0xff;
+                if (cb === 0) return 0;
+                if (ca === 0) return 0;
+                let diff = this.log[ca] - this.log[cb];
+                if (diff < 0) diff += 255;
+                return this.exp[diff];
+            }
+
+            inverse(a) {
+                return this.inv[a & 0xff];
+            }
+
+            pow(a, n) {
+                const ca = a & 0xff;
+                if (ca === 0) return 0;
+                if (n === 0) return 1;
+                let norm = n % 255;
+                if (norm < 0) norm += 255;
+                return this.exp[(this.log[ca] * norm) % 255];
+            }
+
+            order(a) {
+                const ca = a & 0xff;
+                if (ca === 0) return 0;
+                if (ca === 1) return 1;
+                let cur = ca;
+                for (let k = 1; k <= 255; k++) {
+                    if (cur === 1) return k;
+                    cur = this.mul(cur, ca);
+                }
+                return 255;
+            }
+
+            findGenerators() {
+                const gens = [];
+                for (let a = 2; a < 256; a++) {
+                    if (this.order(a) === 255) gens.push(a);
+                }
+                return gens;
+            }
+
+            static toPoly(b) {
+                const clean = b & 0xff;
+                if (clean === 0) return "0";
+                const terms = [];
+                const sups = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷"];
+                for (let i = 7; i >= 0; i--) {
+                    if ((clean >> i) & 1) {
+                        if (i === 0) terms.push("1");
+                        else if (i === 1) terms.push("x");
+                        else terms.push(`x${sups[i]}`);
+                    }
+                }
+                return terms.join(" + ");
+            }
+
+            static toBin(b) {
+                return (b & 0xff).toString(2).padStart(8, "0");
+            }
+
+            static toHex(b) {
+                return "0x" + (b & 0xff).toString(16).toUpperCase().padStart(2, "0");
+            }
+        }
+
+        // Global State
+        let currentPoly = 0x11b;
+        let currentGen = 0x03;
+        let gf = new GaloisField(currentPoly, currentGen);
+
+        let operandA = 0x57;
+        let operandB = 0x83;
+        let currentOp = "mul";
+
+        let cayleyMode = "mul";
+        let orbitK = 0;
+        let orbitAnimId = null;
+        let isOrbitPlaying = false;
+
+        let isInvSbox = false;
+
+        // Strategy #3 Self-Healing State
+        let healZ = 168;
+        let corruptedChannel = null;
+        let corruptedValue = null;
+
+        /**
+         * ========================================================================
+         * INITIALIZATION & EVENT LISTENERS
+         * ========================================================================
+         */
+        document.addEventListener("DOMContentLoaded", () => {
+            initBitButtons();
+            setupInputSync();
+            setupOperatorButtons();
+            setupPolySelector();
+            setupDrawerTabs();
+
+            updateAllCalculatorViews();
+            renderCayleyCanvas();
+            renderSubgrid();
+            renderOrbitWheel();
+            renderSBoxTable();
+            updateSBoxPipeline();
+            updateSelfHealingPipeline();
+            initStegoLab();
+            updateGeneratorsList();
+        });
+
+        // 8-Bit Toggle Switches
+        function initBitButtons() {
+            const groupA = document.getElementById("bitGroupA");
+            const groupB = document.getElementById("bitGroupB");
+            groupA.innerHTML = "";
+            groupB.innerHTML = "";
+
+            for (let i = 7; i >= 0; i--) {
+                // Operand A
+                const colA = document.createElement("div");
+                colA.className = "bit-col";
+                colA.innerHTML = `
+                    <span class="bit-label">b${i}</span>
+                    <button class="bit-btn" id="bitA_${i}" onclick="toggleBitA(${i})">0</button>
+                `;
+                groupA.appendChild(colA);
+
+                // Operand B
+                const colB = document.createElement("div");
+                colB.className = "bit-col";
+                colB.innerHTML = `
+                    <span class="bit-label">b${i}</span>
+                    <button class="bit-btn" id="bitB_${i}" onclick="toggleBitB(${i})">0</button>
+                `;
+                groupB.appendChild(colB);
+            }
+        }
+
+        function toggleBitA(bit) {
+            operandA ^= (1 << bit);
+            updateAllCalculatorViews();
+        }
+
+        function toggleBitB(bit) {
+            operandB ^= (1 << bit);
+            updateAllCalculatorViews();
+        }
+
+        function setOperandA(val) {
+            operandA = val & 0xff;
+            updateAllCalculatorViews();
+        }
+
+        function setOperandB(val) {
+            operandB = val & 0xff;
+            updateAllCalculatorViews();
+        }
+
+        function setupInputSync() {
+            // Operand A
+            const inAHex = document.getElementById("inputAHex");
+            const inADec = document.getElementById("inputADec");
+            const sliderA = document.getElementById("sliderA");
+
+            inAHex.addEventListener("change", (e) => {
+                let v = parseInt(e.target.value, 16);
+                if (isNaN(v)) v = 0;
+                operandA = Math.max(0, Math.min(255, v));
+                updateAllCalculatorViews();
+            });
+
+            inADec.addEventListener("input", (e) => {
+                let v = parseInt(e.target.value, 10);
+                if (isNaN(v)) v = 0;
+                operandA = Math.max(0, Math.min(255, v));
+                updateAllCalculatorViews();
+            });
+
+            sliderA.addEventListener("input", (e) => {
+                operandA = parseInt(e.target.value, 10);
+                updateAllCalculatorViews();
+            });
+
+            // Operand B
+            const inBHex = document.getElementById("inputBHex");
+            const inBDec = document.getElementById("inputBDec");
+            const sliderB = document.getElementById("sliderB");
+
+            inBHex.addEventListener("change", (e) => {
+                let v = parseInt(e.target.value, 16);
+                if (isNaN(v)) v = 0;
+                operandB = Math.max(0, Math.min(255, v));
+                updateAllCalculatorViews();
+            });
+
+            inBDec.addEventListener("input", (e) => {
+                let v = parseInt(e.target.value, 10);
+                if (isNaN(v)) v = 0;
+                operandB = Math.max(0, Math.min(255, v));
+                updateAllCalculatorViews();
+            });
+
+            sliderB.addEventListener("input", (e) => {
+                operandB = parseInt(e.target.value, 10);
+                updateAllCalculatorViews();
+            });
+        }
+
+        function setupOperatorButtons() {
+            const buttons = document.querySelectorAll(".op-button");
+            buttons.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    buttons.forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    currentOp = btn.dataset.op;
+
+                    const cardB = document.getElementById("cardOperandB");
+                    if (currentOp === "inv") {
+                        cardB.style.opacity = "0.35";
+                        cardB.style.pointerEvents = "none";
+                    } else {
+                        cardB.style.opacity = "1";
+                        cardB.style.pointerEvents = "auto";
+                    }
+
+                    updateAllCalculatorViews();
+                });
+            });
+        }
+
+        function setupPolySelector() {
+            const sel = document.getElementById("polySelect");
+            sel.addEventListener("change", (e) => {
+                currentPoly = parseInt(e.target.value, 16);
+                currentGen = (currentPoly === 0x11b) ? 0x03 : 0x02;
+                gf = new GaloisField(currentPoly, currentGen);
+
+                document.getElementById("heroPolyHex").innerText = GaloisField.toHex(currentPoly) + ` (${currentPoly} dec)`;
+                const optText = sel.options[sel.selectedIndex].text;
+                document.getElementById("heroPolyFormula").innerText = optText.split("•")[1]?.trim() || "Degree-8 Modulus";
+
+                updateAllCalculatorViews();
+                renderCayleyCanvas();
+                renderSubgrid();
+                renderOrbitWheel();
+                renderSBoxTable();
+                updateGeneratorsList();
+                updateSelfHealingPipeline();
+            });
+        }
+
+        function setupDrawerTabs() {
+            const tabs = document.querySelectorAll(".tab-btn");
+            tabs.forEach(tab => {
+                tab.addEventListener("click", () => {
+                    tabs.forEach(t => t.classList.remove("active"));
+                    tab.classList.add("active");
+                    updateDrawerContent(tab.dataset.tab);
+                });
+            });
+        }
+
+        /**
+         * ========================================================================
+         * CALCULATOR VIEW SYNCHRONIZATION
+         * ========================================================================
+         */
+        function updateAllCalculatorViews() {
+            document.getElementById("inputAHex").value = GaloisField.toHex(operandA);
+            document.getElementById("inputADec").value = operandA;
+            document.getElementById("sliderA").value = operandA;
+            document.getElementById("polyA").innerText = GaloisField.toPoly(operandA);
+            for (let i = 0; i < 8; i++) {
+                const bit = (operandA >> i) & 1;
+                const btn = document.getElementById(`bitA_${i}`);
+                if (btn) {
+                    btn.innerText = bit;
+                    btn.classList.toggle("active", bit === 1);
+                }
+            }
+
+            document.getElementById("inputBHex").value = GaloisField.toHex(operandB);
+            document.getElementById("inputBDec").value = operandB;
+            document.getElementById("sliderB").value = operandB;
+            document.getElementById("polyB").innerText = GaloisField.toPoly(operandB);
+            for (let i = 0; i < 8; i++) {
+                const bit = (operandB >> i) & 1;
+                const btn = document.getElementById(`bitB_${i}`);
+                if (btn) {
+                    btn.innerText = bit;
+                    btn.classList.toggle("active", bit === 1);
+                }
+            }
+
+            let result = 0;
+            let opSymbol = "⊗";
+            let opTitle = "Multiplication";
+
+            switch (currentOp) {
+                case "add":
+                    result = gf.add(operandA, operandB);
+                    opSymbol = "⊕";
+                    opTitle = "Galois Addition (XOR)";
+                    break;
+                case "sub":
+                    result = gf.sub(operandA, operandB);
+                    opSymbol = "⊖";
+                    opTitle = "Galois Subtraction (Identical to Addition)";
+                    break;
+                case "mul":
+                    result = gf.mul(operandA, operandB);
+                    opSymbol = "⊗";
+                    opTitle = "Galois Multiplication (Modulo P(x))";
+                    break;
+                case "div":
+                    result = gf.div(operandA, operandB);
+                    opSymbol = "⊘";
+                    opTitle = "Galois Field Division";
+                    break;
+                case "inv":
+                    result = gf.inverse(operandA);
+                    opSymbol = "⁻¹";
+                    opTitle = "Multiplicative Inverse (A⁻¹)";
+                    break;
+                case "pow":
+                    result = gf.pow(operandA, operandB);
+                    opSymbol = "^";
+                    opTitle = "Exponentiation (Aⁿ)";
+                    break;
+            }
+
+            document.getElementById("operationTitle").innerText = opTitle;
+            document.getElementById("operationEquation").innerText = currentOp === "inv"
+                ? `(${GaloisField.toHex(operandA)})⁻¹ mod P(x)`
+                : `${GaloisField.toHex(operandA)} ${opSymbol} ${GaloisField.toHex(operandB)}`;
+
+            document.getElementById("resultHex").innerText = GaloisField.toHex(result);
+            document.getElementById("resultDec").innerText = result;
+            document.getElementById("resultBin").innerText = GaloisField.toBin(result);
+            document.getElementById("resultPoly").innerText = "Polynomial: " + GaloisField.toPoly(result);
+
+            if (result > 0) {
+                const logVal = gf.log[result];
+                document.getElementById("resultExp").innerText = `α${["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"][logVal] || logVal}`;
+            } else {
+                document.getElementById("resultExp").innerText = "0 (No log)";
+            }
+
+            const activeTab = document.querySelector(".tab-btn.active");
+            if (activeTab) updateDrawerContent(activeTab.dataset.tab);
+        }
+
+        function updateDrawerContent(tab) {
+            const container = document.getElementById("drawerContent");
+            if (!container) return;
+
+            if (tab === "peasant") {
+                if (currentOp === "mul") {
+                    let stepsHtml = `
+                        <div style="margin-bottom: 8px; color: var(--text-muted);">
+                            Russian Peasant Shift-and-Add Algorithm modulo ${GaloisField.toHex(currentPoly)}:
+                        </div>
+                        <table class="peasant-table">
+                            <thead>
+                                <tr>
+                                    <th>Bit #</th>
+                                    <th>Multiplier Bit</th>
+                                    <th>Current A</th>
+                                    <th>Action</th>
+                                    <th>Accumulator</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    let p = 0;
+                    let tempA = operandA;
+                    let tempB = operandB;
+
+                    for (let i = 0; i < 8; i++) {
+                        const bit = tempB & 1;
+                        const hi = (tempA & 0x80) !== 0;
+                        if (bit === 1) p ^= tempA;
+
+                        const nextA = ((tempA << 1) & 0xff) ^ (hi ? (currentPoly & 0xff) : 0);
+
+                        stepsHtml += `
+                            <tr class="${bit === 1 ? 'step-active' : ''}">
+                                <td>${i}</td>
+                                <td><strong>${bit}</strong></td>
+                                <td>${GaloisField.toHex(tempA)} (${GaloisField.toBin(tempA)})</td>
+                                <td>${bit === 1 ? `XOR A into acc (+${GaloisField.toHex(tempA)})` : 'Skip add'} ${hi ? `[MSB 1: XOR poly]` : ''}</td>
+                                <td><strong>${GaloisField.toHex(p)}</strong></td>
+                            </tr>
+                        `;
+
+                        tempA = nextA;
+                        tempB >>= 1;
+                    }
+
+                    stepsHtml += `</tbody></table>`;
+                    container.innerHTML = stepsHtml;
+                } else if (currentOp === "add" || currentOp === "sub") {
+                    container.innerHTML = `
+                        <div style="line-height: 1.8;">
+                            <div style="color: var(--accent-cyan-hover); margin-bottom: 6px; font-weight:600;">Carryless Addition (Bitwise XOR):</div>
+                            <div>A: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${GaloisField.toBin(operandA)} &nbsp;(${GaloisField.toHex(operandA)})</div>
+                            <div>B: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${GaloisField.toBin(operandB)} &nbsp;(${GaloisField.toHex(operandB)})</div>
+                            <div style="border-top: 1px dashed var(--border-card); width: 240px; margin: 4px 0;"></div>
+                            <div style="color: var(--accent-emerald-hover); font-weight:700;">A ⊕ B: &nbsp;${GaloisField.toBin(operandA ^ operandB)} &nbsp;(${GaloisField.toHex(operandA ^ operandB)})</div>
+                            <div style="margin-top: 8px; color: var(--text-muted); font-size: 0.75rem;">
+                                Note: In characteristic 2 fields, 1 + 1 = 0 without carry propagation. Subtraction is identical to addition.
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `<div style="color: var(--text-muted);">Peasant algorithm applies to multiplication and addition. Current op: ${currentOp}.</div>`;
+                }
+            } else if (tab === "logexp") {
+                if (operandA === 0 || operandB === 0) {
+                    container.innerHTML = `<div style="color: var(--text-muted);">Multiplication by 0 yields 0 (0 has no logarithm in GF(2⁸)*).</div>`;
+                } else {
+                    const logA = gf.log[operandA];
+                    const logB = gf.log[operandB];
+                    const sumMod = (logA + logB) % 255;
+                    const res = gf.exp[sumMod];
+
+                    container.innerHTML = `
+                        <div style="line-height: 1.8;">
+                            <div style="color: var(--accent-cyan-hover); margin-bottom: 6px; font-weight:600;">Cyclic Log/Antilog Table Lookup using generator α = ${GaloisField.toHex(currentGen)}:</div>
+                            <div>1. log_α(${GaloisField.toHex(operandA)}) = <strong>${logA}</strong> &nbsp; (i.e. α^${logA} = ${GaloisField.toHex(operandA)})</div>
+                            <div>2. log_α(${GaloisField.toHex(operandB)}) = <strong>${logB}</strong> &nbsp; (i.e. α^${logB} = ${GaloisField.toHex(operandB)})</div>
+                            <div>3. Exponent Sum: (${logA} + ${logB}) mod 255 = <strong>${sumMod}</strong></div>
+                            <div>4. Antilog Result: α^${sumMod} = <strong style="color: var(--accent-emerald-hover);">${GaloisField.toHex(res)} (${res} dec)</strong></div>
+                            <div style="margin-top: 8px; color: var(--text-muted); font-size: 0.75rem;">
+                                Table lookup reduces 8-bit finite field multiplication to an integer addition modulo 255!
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (tab === "theory") {
+                container.innerHTML = `
+                    <div style="line-height: 1.6; color: var(--text-secondary);">
+                        <strong style="color: var(--text-primary);">Polynomial Ring Definition:</strong><br>
+                        GF(2⁸) is defined as the quotient ring 𝔽₂[x] / ⟨P(x)⟩, where P(x) = ${GaloisField.toPoly(currentPoly)} (${GaloisField.toHex(currentPoly)}).
+                        Elements are polynomials of degree &le; 7 with coefficients in {0, 1}.
+                        <br><br>
+                        <strong style="color: var(--text-primary);">Field Properties:</strong><br>
+                        • Every non-zero element has a multiplicative inverse ($a \\cdot a^{-1} = 1$).<br>
+                        • Multiplication is associative, commutative, and distributive over addition.<br>
+                        • There are no zero divisors: if $a \\otimes b = 0$, then either $a = 0$ or $b = 0$.
+                    </div>
+                `;
+            }
+        }
+
+        /**
+         * ========================================================================
+         * MODULE 2: CAYLEY MATRIX CANVAS VISUALIZER
+         * ========================================================================
+         */
+        function setCayleyMode(mode) {
+            cayleyMode = mode;
+            document.querySelectorAll(".cayley-toolbar .btn").forEach(btn => btn.classList.remove("active-cayley-btn"));
+            if (mode === "mul") document.getElementById("btnCayleyMul").classList.add("active-cayley-btn");
+            else if (mode === "add") document.getElementById("btnCayleyAdd").classList.add("active-cayley-btn");
+            else document.getElementById("btnCayleyDiv").classList.add("active-cayley-btn");
+
+            const insight = document.getElementById("cayleyInsightText");
+            if (mode === "mul") {
+                insight.innerHTML = "<strong>Multiplication Latin Square:</strong> Because GF(2⁸) has no zero divisors, every row and column in the non-zero submatrix (1..255) contains every element from 1 to 255 exactly once.";
+            } else if (mode === "add") {
+                insight.innerHTML = "<strong>Addition Sierpinski Fractal:</strong> Addition in GF(2⁸) is bitwise XOR without carries. Visualizing XOR values reveals recursive self-similar Sierpinski triangle patterns!";
+            } else {
+                insight.innerHTML = "<strong>Division Field Operator:</strong> Computed as $x \\oslash y = x \\otimes y^{-1}$. Row 0 is all zeros; column 0 is undefined/zero.";
+            }
+
+            renderCayleyCanvas();
+            renderSubgrid();
+        }
+
+        function renderCayleyCanvas() {
+            const canvas = document.getElementById("cayleyCanvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+            const imgData = ctx.createImageData(256, 256);
+            const palette = document.getElementById("paletteSelect").value;
+
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let val = 0;
+                    if (cayleyMode === "mul") val = gf.mul(x, y);
+                    else if (cayleyMode === "add") val = gf.add(x, y);
+                    else val = gf.div(x, y);
+
+                    const idx = (y * 256 + x) * 4;
+                    const rgb = getColorForByte(val, palette);
+
+                    imgData.data[idx] = rgb[0];
+                    imgData.data[idx + 1] = rgb[1];
+                    imgData.data[idx + 2] = rgb[2];
+                    imgData.data[idx + 3] = 255;
+                }
+            }
+
+            const offscreen = document.createElement("canvas");
+            offscreen.width = 256;
+            offscreen.height = 256;
+            offscreen.getContext("2d").putImageData(imgData, 0, 0);
+
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(offscreen, 0, 0, 512, 512);
+        }
+
+        function getColorForByte(val, palette) {
+            const norm = val / 255;
+            if (palette === "glow2") {
+                // Glow2 Palette: Cyan (#38bdf8), Emerald (#10b981), Purple (#a855f7), Yellow (#f78522), Rose (#f43f5e)
+                if (norm < 0.25) {
+                    // Cyan to Emerald
+                    const t = norm / 0.25;
+                    return [Math.floor(56 * (1 - t) + 16 * t), Math.floor(189 * (1 - t) + 185 * t), Math.floor(248 * (1 - t) + 129 * t)];
+                } else if (norm < 0.5) {
+                    // Emerald to Yellow
+                    const t = (norm - 0.25) / 0.25;
+                    return [Math.floor(16 * (1 - t) + 247 * t), Math.floor(185 * (1 - t) + 133 * t), Math.floor(129 * (1 - t) + 34 * t)];
+                } else if (norm < 0.75) {
+                    // Yellow to Rose
+                    const t = (norm - 0.5) / 0.25;
+                    return [Math.floor(247 * (1 - t) + 244 * t), Math.floor(133 * (1 - t) + 63 * t), Math.floor(34 * (1 - t) + 94 * t)];
+                } else {
+                    // Rose to Purple
+                    const t = (norm - 0.75) / 0.25;
+                    return [Math.floor(244 * (1 - t) + 168 * t), Math.floor(63 * (1 - t) + 85 * t), Math.floor(94 * (1 - t) + 247 * t)];
+                }
+            } else if (palette === "cadence") {
+                return [Math.floor(37 * (1 - norm) + 16 * norm), Math.floor(99 * (1 - norm) + 185 * norm), Math.floor(235 * (1 - norm) + 129 * norm)];
+            } else if (palette === "thermal") {
+                const r = Math.floor(Math.min(255, Math.max(0, 1.8 * norm * 255)));
+                const g = Math.floor(Math.sin(norm * Math.PI) * 220);
+                const b = Math.floor(Math.cos(norm * Math.PI * 0.5) * 255);
+                return [r, g, b];
+            } else {
+                // Monochrome Sharp
+                const c = Math.floor((1 - norm) * 220 + 20);
+                return [c, c, c];
+            }
+        }
+
+        const cayleyCanvas = document.getElementById("cayleyCanvas");
+        cayleyCanvas.addEventListener("mousemove", (e) => {
+            const rect = cayleyCanvas.getBoundingClientRect();
+            const scaleX = 256 / rect.width;
+            const scaleY = 256 / rect.height;
+            const x = Math.max(0, Math.min(255, Math.floor((e.clientX - rect.left) * scaleX)));
+            const y = Math.max(0, Math.min(255, Math.floor((e.clientY - rect.top) * scaleY)));
+
+            let val = 0;
+            if (cayleyMode === "mul") val = gf.mul(x, y);
+            else if (cayleyMode === "add") val = gf.add(x, y);
+            else val = gf.div(x, y);
+
+            document.getElementById("inspX").innerText = `${GaloisField.toHex(x)} (${x})`;
+            document.getElementById("inspY").innerText = `${GaloisField.toHex(y)} (${y})`;
+            document.getElementById("inspZ").innerText = `${GaloisField.toHex(val)} (${val})`;
+            document.getElementById("inspPoly").innerText = GaloisField.toPoly(val);
+        });
+
+        cayleyCanvas.addEventListener("click", (e) => {
+            const rect = cayleyCanvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) * (256 / rect.width));
+            const y = Math.floor((e.clientY - rect.top) * (256 / rect.height));
+            operandA = x;
+            operandB = y;
+            updateAllCalculatorViews();
+        });
+
+        function copyInspectorToCalc() {
+            const x = parseInt(document.getElementById("inspX").innerText, 16);
+            const y = parseInt(document.getElementById("inspY").innerText, 16);
+            if (!isNaN(x)) operandA = x;
+            if (!isNaN(y)) operandB = y;
+            updateAllCalculatorViews();
+            window.location.hash = "calculator";
+        }
+
+        function renderSubgrid() {
+            const container = document.getElementById("subgridPreview");
+            if (!container) return;
+
+            let html = '<table style="width:100%; border-collapse:collapse; text-align:center;">';
+            html += '<tr><th style="color:var(--accent-cyan-hover); border-bottom:1px solid var(--border-card); padding:2px;">·</th>';
+            for (let col = 0; col < 8; col++) {
+                html += `<th style="color:var(--text-muted); border-bottom:1px solid var(--border-card); padding:2px;">${col.toString(16).toUpperCase()}</th>`;
+            }
+            html += '</tr>';
+
+            for (let row = 0; row < 8; row++) {
+                html += `<tr><th style="color:var(--text-muted); padding:2px;">${row.toString(16).toUpperCase()}</th>`;
+                for (let col = 0; col < 8; col++) {
+                    let v = cayleyMode === "mul" ? gf.mul(row, col) : (cayleyMode === "add" ? gf.add(row, col) : gf.div(row, col));
+                    html += `<td style="padding:2px; font-weight:${v === 1 ? '700' : '400'}; color:${v === 1 ? 'var(--accent-emerald-hover)' : 'var(--text-secondary)'};">${v.toString(16).toUpperCase().padStart(2, '0')}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            container.innerHTML = html;
+        }
+
+        /**
+         * ========================================================================
+         * MODULE 3: CYCLIC GROUP WHEEL & ORBIT
+         * ========================================================================
+         */
+        function renderOrbitWheel() {
+            const canvas = document.getElementById("orbitCanvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+            const w = canvas.width;
+            const h = canvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+            const radius = 175;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Draw outer circle track
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = "#e2e8f0";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Draw 255 radial tick points
+            for (let k = 0; k < 255; k++) {
+                const angle = (k / 255) * Math.PI * 2 - Math.PI / 2;
+                const px = cx + Math.cos(angle) * radius;
+                const py = cy + Math.sin(angle) * radius;
+
+                ctx.beginPath();
+                ctx.arc(px, py, 2, 0, Math.PI * 2);
+                ctx.fillStyle = (k === orbitK) ? "#38bdf8" : "#cbd5e1";
+                ctx.fill();
+            }
+
+            // Draw active ray from center to current power
+            const activeAngle = (orbitK / 255) * Math.PI * 2 - Math.PI / 2;
+            const activeX = cx + Math.cos(activeAngle) * radius;
+            const activeY = cy + Math.sin(activeAngle) * radius;
+
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(activeX, activeY);
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.7)";
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Center circle hub
+            ctx.beginPath();
+            ctx.arc(cx, cy, 32, 0, Math.PI * 2);
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = "#0284c7";
+            ctx.font = "bold 13px 'JetBrains Mono', monospace";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(`α = ${GaloisField.toHex(currentGen)}`, cx, cy);
+
+            // Active Orbit Head Dot
+            ctx.beginPath();
+            ctx.arc(activeX, activeY, 9, 0, Math.PI * 2);
+            ctx.fillStyle = "#38bdf8";
+            ctx.shadowColor = "rgba(56, 189, 248, 0.6)";
+            ctx.shadowBlur = 12;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            const val = gf.exp[orbitK];
+            document.getElementById("orbitKLabel").innerText = `k = ${orbitK}`;
+            document.getElementById("orbitPowerText").innerText = `α${orbitK}`;
+            document.getElementById("orbitHexText").innerText = GaloisField.toHex(val);
+            document.getElementById("orbitDecText").innerText = val;
+            document.getElementById("orbitPolyText").innerText = "Polynomial: " + GaloisField.toPoly(val);
+        }
+
+        function setOrbitK(k) {
+            orbitK = k % 255;
+            document.getElementById("orbitSlider").value = orbitK;
+            renderOrbitWheel();
+        }
+
+        function toggleOrbitAnimation() {
+            isOrbitPlaying = !isOrbitPlaying;
+            const btn = document.getElementById("btnPlayOrbit");
+            if (isOrbitPlaying) {
+                btn.innerText = "⏸ Pause Orbit";
+                animateOrbit();
+            } else {
+                btn.innerText = "▶ Play Orbit";
+                if (orbitAnimId) cancelAnimationFrame(orbitAnimId);
+            }
+        }
+
+        function animateOrbit() {
+            if (!isOrbitPlaying) return;
+            orbitK = (orbitK + 1) % 255;
+            document.getElementById("orbitSlider").value = orbitK;
+            renderOrbitWheel();
+            orbitAnimId = requestAnimationFrame(animateOrbit);
+        }
+
+        function calcOrderForInput() {
+            const val = parseInt(document.getElementById("orderInput").value, 10);
+            if (isNaN(val) || val < 1 || val > 255) return;
+            const ord = gf.order(val);
+            document.getElementById("orderResultText").innerHTML = `
+                Order of ${GaloisField.toHex(val)} (${val}): <strong>${ord}</strong> 
+                ${ord === 255 ? '<span style="color:var(--accent-emerald-hover);">[Primitive Root / Full Generator!]</span>' : '<span style="color:var(--accent-yellow-hover);">[Subgroup of size ' + ord + ']</span>'}
+            `;
+        }
+
+        function updateGeneratorsList() {
+            const gens = gf.findGenerators();
+            const container = document.getElementById("generatorListText");
+            if (!container) return;
+            container.innerHTML = `Found ${gens.length} primitive generators of order 255:<br>` +
+                gens.map(g => `${GaloisField.toHex(g)}`).join(", ");
+        }
+
+        /**
+         * ========================================================================
+         * MODULE 4: AES S-BOX PIPELINE & TABLE
+         * ========================================================================
+         */
+        function computeAESSbox() {
+            const sbox = new Uint8Array(256);
+            const invSbox = new Uint8Array(256);
+
+            for (let b = 0; b < 256; b++) {
+                const inv = gf.inverse(b);
+                let s = 0;
+                for (let i = 0; i < 8; i++) {
+                    const b0 = (inv >> i) & 1;
+                    const b4 = (inv >> ((i + 4) % 8)) & 1;
+                    const b5 = (inv >> ((i + 5) % 8)) & 1;
+                    const b6 = (inv >> ((i + 6) % 8)) & 1;
+                    const b7 = (inv >> ((i + 7) % 8)) & 1;
+                    const c = (0x63 >> i) & 1;
+                    s |= ((b0 ^ b4 ^ b5 ^ b6 ^ b7 ^ c) << i);
+                }
+                sbox[b] = s;
+                invSbox[s] = b;
+            }
+            return { sbox, invSbox };
+        }
+
+        function updateSBoxPipeline() {
+            const inputField = document.getElementById("sboxInputByte");
+            let byteVal = parseInt(inputField.value, 16);
+            if (isNaN(byteVal)) byteVal = 0x53;
+            byteVal = Math.max(0, Math.min(255, byteVal));
+
+            document.getElementById("sboxInputDec").innerText = `${byteVal} dec`;
+
+            const invVal = gf.inverse(byteVal);
+            document.getElementById("sboxInvResult").innerText = GaloisField.toHex(invVal);
+
+            const { sbox } = computeAESSbox();
+            const finalVal = sbox[byteVal];
+            document.getElementById("sboxFinalResult").innerText = GaloisField.toHex(finalVal);
+
+            highlightSBoxCell(byteVal);
+        }
+
+        function renderSBoxTable() {
+            const table = document.getElementById("sboxTable");
+            if (!table) return;
+            const { sbox, invSbox } = computeAESSbox();
+            const activeTable = isInvSbox ? invSbox : sbox;
+
+            let html = "<thead><tr><th>·</th>";
+            for (let c = 0; c < 16; c++) html += `<th>${c.toString(16).toUpperCase()}</th>`;
+            html += "</tr></thead><tbody>";
+
+            for (let r = 0; r < 16; r++) {
+                html += `<tr><th>${r.toString(16).toUpperCase()}</th>`;
+                for (let c = 0; c < 16; c++) {
+                    const byteIdx = (r << 4) | c;
+                    const mapped = activeTable[byteIdx];
+                    html += `<td id="sbox_${byteIdx}" onclick="selectSBoxByte(${byteIdx})">${mapped.toString(16).toUpperCase().padStart(2, "0")}</td>`;
+                }
+                html += "</tr>";
+            }
+            html += "</tbody>";
+            table.innerHTML = html;
+        }
+
+        function toggleSBoxMode(inv) {
+            isInvSbox = inv;
+            document.getElementById("btnFwdSBox").className = !inv ? "btn btn-cyan" : "btn btn-slate";
+            document.getElementById("btnInvSBox").className = inv ? "btn btn-cyan" : "btn btn-slate";
+            renderSBoxTable();
+            updateSBoxPipeline();
+        }
+
+        function selectSBoxByte(byteVal) {
+            document.getElementById("sboxInputByte").value = GaloisField.toHex(byteVal);
+            updateSBoxPipeline();
+        }
+
+        function highlightSBoxCell(byteVal) {
+            document.querySelectorAll(".sbox-table td").forEach(td => td.classList.remove("highlighted"));
+            const target = document.getElementById(`sbox_${byteVal}`);
+            if (target) target.classList.add("highlighted");
+        }
+
+        /**
+         * ========================================================================
+         * MODULE 5: STRATEGY #3 SELF-HEALING (Glow2 Accent Palette)
+         * ========================================================================
+         */
+        const FIXED_SIGNATURE_MULTIPLIER = 42;
+
+        function updateCharSelfHealing(char) {
+            if (!char) return;
+            healZ = char.charCodeAt(0) & 0xff;
+            document.getElementById("secretInputByte").value = healZ;
+            updateSelfHealingPipeline();
+        }
+
+        function updateSelfHealingPipeline() {
+            const inVal = parseInt(document.getElementById("secretInputByte").value, 10);
+            if (!isNaN(inVal)) healZ = Math.max(0, Math.min(255, inVal));
+
+            let r = healZ;
+            let g = gf.mul(healZ, FIXED_SIGNATURE_MULTIPLIER);
+            let b = gf.add(r, g);
+
+            const boxR = document.getElementById("boxR");
+            const boxG = document.getElementById("boxG");
+            const boxB = document.getElementById("boxB");
+            boxR.classList.remove("corrupted");
+            boxG.classList.remove("corrupted");
+            boxB.classList.remove("corrupted");
+
+            if (corruptedChannel === "R") {
+                r = corruptedValue;
+                boxR.classList.add("corrupted");
+            } else if (corruptedChannel === "G") {
+                g = corruptedValue;
+                boxG.classList.add("corrupted");
+            } else if (corruptedChannel === "B") {
+                b = corruptedValue;
+                boxB.classList.add("corrupted");
+            }
+
+            document.getElementById("swatchR").style.backgroundColor = `rgb(${r}, 40, 70)`;
+            document.getElementById("valR").innerText = `${GaloisField.toHex(r)} (${r})`;
+
+            document.getElementById("swatchG").style.backgroundColor = `rgb(16, ${g}, 129)`;
+            document.getElementById("valG").innerText = `${GaloisField.toHex(g)} (${g})`;
+
+            document.getElementById("swatchB").style.backgroundColor = `rgb(56, 189, ${b})`;
+            document.getElementById("valB").innerText = `${GaloisField.toHex(b)} (${b})`;
+
+            solveAndHealChannels(r, g, b);
+        }
+
+        function injectCorruption(channel) {
+            corruptedChannel = channel;
+            corruptedValue = (Math.floor(Math.random() * 254) + 1);
+            updateSelfHealingPipeline();
+        }
+
+        function resetCorruption() {
+            corruptedChannel = null;
+            corruptedValue = null;
+            updateSelfHealingPipeline();
+        }
+
+        function solveAndHealChannels(r, g, b) {
+            const badge = document.getElementById("syndromeBadge");
+            const syn1 = document.getElementById("synCheck1");
+            const syn2 = document.getElementById("synCheck2");
+            const syn3 = document.getElementById("synCheck3");
+
+            let recoveredZ = r;
+            let statusMsg = "";
+
+            if (gf.add(r, g) === b) {
+                syn1.innerText = `R ⊕ G = B (${GaloisField.toHex(r)} ⊕ ${GaloisField.toHex(g)} = ${GaloisField.toHex(b)}) [PASS]`;
+                syn1.style.color = "var(--accent-emerald-hover)";
+                syn2.style.color = "var(--text-muted)";
+                syn3.style.color = "var(--text-muted)";
+
+                badge.className = "syndrome-badge pristine";
+                badge.innerHTML = '<span class="dot-sm bg-emerald"></span> Channels Pristine: Exact Algebraic Equilibrium';
+                statusMsg = "Data Channels Intact (No Noise)";
+                recoveredZ = r;
+            } else {
+                syn1.innerText = `R ⊕ G ≠ B (${GaloisField.toHex(r)} ⊕ ${GaloisField.toHex(g)} ≠ ${GaloisField.toHex(b)}) [ERROR DETECTED]`;
+                syn1.style.color = "var(--accent-rose)";
+
+                const expectedBFromR = gf.add(r, gf.mul(r, FIXED_SIGNATURE_MULTIPLIER));
+                if (expectedBFromR === b) {
+                    syn3.innerText = `R ⊕ (R ⊗ 42) = B [MATCH! Channel G corrupted]`;
+                    syn3.style.color = "var(--accent-cyan-hover)";
+                    syn2.style.color = "var(--text-muted)";
+
+                    badge.className = "syndrome-badge repaired";
+                    badge.innerHTML = '<span class="dot-sm bg-cyan"></span> Healed: Channel G Corruption Successfully Bypassed!';
+                    statusMsg = "Channel G Corrupted • Reconstructed from Channel R";
+                    recoveredZ = r;
+                } else {
+                    const recoveredRFromG = gf.div(g, FIXED_SIGNATURE_MULTIPLIER);
+                    if (gf.add(recoveredRFromG, g) === b) {
+                        syn2.innerText = `(G ⊘ 42) ⊕ G = B [MATCH! Channel R corrupted]`;
+                        syn2.style.color = "var(--accent-cyan-hover)";
+                        syn3.style.color = "var(--text-muted)";
+
+                        badge.className = "syndrome-badge repaired";
+                        badge.innerHTML = '<span class="dot-sm bg-cyan"></span> Healed: Channel R Reconstructed from G and B!';
+                        statusMsg = "Channel R Corrupted • Reconstructed via Field Division (G ⊘ 42)";
+                        recoveredZ = recoveredRFromG;
+                    } else {
+                        badge.className = "syndrome-badge repaired";
+                        badge.innerHTML = '<span class="dot-sm bg-cyan"></span> Healed: Channel B Corrupted; R and G Preserved!';
+                        statusMsg = "Channel B Corrupted • Checksum Restored";
+                        recoveredZ = r;
+                    }
+                }
+            }
+
+            document.getElementById("healedByteVal").innerText = recoveredZ;
+            document.getElementById("healedHexVal").innerText = GaloisField.toHex(recoveredZ);
+            document.getElementById("healStatusMsg").innerText = statusMsg;
+        }
+
+        /**
+         * ========================================================================
+         * MODULE 6: CHAOTIC STEGANOGRAPHY LAB (galois.txt)
+         * ========================================================================
+         */
+        const stegoSize = 160;
+        let originalPixels = new Uint8Array(stegoSize * stegoSize);
+        let scrambledPixels = new Uint8Array(stegoSize * stegoSize);
+
+        function initStegoLab() {
+            generateNewStegoPattern();
+        }
+
+        function generateNewStegoPattern() {
+            const canvas = document.getElementById("stegoOrigCanvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+            const imgData = ctx.createImageData(stegoSize, stegoSize);
+
+            for (let y = 0; y < stegoSize; y++) {
+                for (let x = 0; x < stegoSize; x++) {
+                    const idx = y * stegoSize + x;
+                    const dx = x - stegoSize / 2;
+                    const dy = y - stegoSize / 2;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const checker = ((Math.floor(x / 16) + Math.floor(y / 16)) % 2) * 80;
+                    const ring = Math.floor(Math.sin(dist / 8) * 127 + 128);
+                    const val = (ring ^ checker) & 0xff;
+
+                    originalPixels[idx] = val;
+                    imgData.data[idx * 4] = val;
+                    imgData.data[idx * 4 + 1] = val;
+                    imgData.data[idx * 4 + 2] = val;
+                    imgData.data[idx * 4 + 3] = 255;
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            const cScrambled = document.getElementById("stegoScrambledCanvas").getContext("2d");
+            cScrambled.fillStyle = "#ffffff";
+            cScrambled.fillRect(0, 0, stegoSize, stegoSize);
+
+            const cRecovered = document.getElementById("stegoRecoveredCanvas").getContext("2d");
+            cRecovered.fillStyle = "#ffffff";
+            cRecovered.fillRect(0, 0, stegoSize, stegoSize);
+        }
+
+        function runStegoScramble() {
+            const canvas = document.getElementById("stegoScrambledCanvas");
+            const ctx = canvas.getContext("2d");
+            const imgData = ctx.createImageData(stegoSize, stegoSize);
+
+            let x = 0.456;
+            const r = 3.99;
+
+            for (let i = 0; i < originalPixels.length; i++) {
+                x = r * x * (1 - x);
+                const chaosKey = Math.floor(x * 1e6) % 256;
+
+                const mixed = gf.add(originalPixels[i], chaosKey);
+                const scrambled = gf.mul(mixed, 0x03);
+
+                scrambledPixels[i] = scrambled;
+                imgData.data[i * 4] = scrambled;
+                imgData.data[i * 4 + 1] = scrambled;
+                imgData.data[i * 4 + 2] = scrambled;
+                imgData.data[i * 4 + 3] = 255;
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        function runStegoDescramble() {
+            const canvas = document.getElementById("stegoRecoveredCanvas");
+            const ctx = canvas.getContext("2d");
+            const imgData = ctx.createImageData(stegoSize, stegoSize);
+
+            let x = 0.456;
+            const r = 3.99;
+
+            for (let i = 0; i < scrambledPixels.length; i++) {
+                x = r * x * (1 - x);
+                const chaosKey = Math.floor(x * 1e6) % 256;
+
+                const unmul = gf.div(scrambledPixels[i], 0x03);
+                const restored = gf.add(unmul, chaosKey);
+
+                imgData.data[i * 4] = restored;
+                imgData.data[i * 4 + 1] = restored;
+                imgData.data[i * 4 + 2] = restored;
+                imgData.data[i * 4 + 3] = 255;
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+        }
+    </script>
+</body>
+
+</html>

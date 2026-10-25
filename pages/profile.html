@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Details</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&family=Roboto:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+        
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #059669; /* Emerald Green */
+            --primary-light: #ecfdf5;
+            --border-color: #e2e8f0;
+            --accent: #3b82f6; /* Subtle blue accent for links */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .settings-container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .settings-sidebar {
+            width: 220px;
+            background-color: #f1f5f9;
+            border-right: 1px solid var(--border-color);
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            width: 100%;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            width: 100%;
+        }
+
+        .sidebar-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-item.active a {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .sidebar-item a:hover:not(.sidebar-item.active a) {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        /* Main Content Area */
+        .settings-content {
+            flex: 1;
+            padding: 40px 50px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .content-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .status-badge {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(5, 150, 105, 0.15);
+        }
+
+        /* Profile Data Grid Layout */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 28px;
+            margin-bottom: 35px;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-group.full-width {
+            grid-column: span 2;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Replaced Inputs with styled text components */
+        .info-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        /* Responsive Configuration */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+            .settings-container {
+                flex-direction: column;
+            }
+            .settings-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 24px;
+            }
+            .settings-content {
+                padding: 30px 24px;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .info-group.full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="settings-container">
+        <!-- Sidebar Navigation Menu -->
+        <aside class="settings-sidebar">
+            <h3 class="sidebar-title">Account Center</h3>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item active"><a href="#profile">Personal Details</a></li>
+                <li class="sidebar-item"><a href="/galois" style="color: #059669; font-weight: 600;">𝔽₂₈ Galois Field Demo</a></li>
+                <li class="sidebar-item"><a href="/glow2">Clinical Cadence</a></li>
+            </ul>
+            <img id="profile-avatar" class="profile-avatar" src="" alt="User Profile Picture" />
+        </aside>
+
+        <!-- Main Information Content Card -->
+        <main class="settings-content">
+            <section id="profile-summary">
+                <div class="content-header">
+                    <h2>Personal Profile</h2>
+                    <span class="status-badge">Verified Account</span>
+                </div>
+
+                <!-- Structured Content Output Fields -->
+                <div class="info-grid">
+                    <div class="info-group">
+                        <span class="info-label">First Name</span>
+                        <div class="info-value" data-key="firstName">--</div>
+                    </div>
+
+                    <div class="info-group">
+                        <span class="info-label">Last Name</span>
+                        <div class="info-value" data-key="lastName">--</div>
+                    </div>
+
+                    <div class="info-group">
+                        <span class="info-label">Email Address</span>
+                        <div class="info-value" data-key="email">--</div>
+                    </div>
+
+                    <div class="info-group">
+                        <span class="info-label">Name</span>
+                        <div class="info-value" data-key="userName">--</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+<script>
+    async function loadData() {
+        try {
+            const res = await fetch('/api/data');
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                console.warn('API Error:', errorData.error || 'Unknown error');
+                
+                //TODO: WHERE TO REDIR / ELSE? 
+                // Redirect user to sign-in page if unauthorized
+                if (res.status === 401 || res.status === 400) {
+                    window.location.href = '/signin';
+                }
+                return;
+            }
+
+            const data = await res.json();
+
+            const profile = data;
+            if (!profile) {
+                console.warn("No googleUserProfile found in response");
+                //TODO: WHERE TO REDIR? 
+                return;
+            }
+
+            setVisibleValue('firstName', profile.given_name || '');
+            setVisibleValue('lastName', profile.family_name || '');
+            setVisibleValue('email', profile.email || '');
+            setVisibleValue('userName', profile.name || '');
+
+            // Set profile image source
+            if (profile.picture) {
+                const avatarImg = document.getElementById('profile-avatar');
+                if (avatarImg) {
+                    avatarImg.src = profile.picture;
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load profile data:', error);
+        }
+    }
+
+    loadData();
+
+    // A reusable function to update any div by its data-key
+    function setVisibleValue(key, value) {
+        const targetElement = document.querySelector(`[data-key="${key}"]`);
+        
+        if (targetElement) {
+            targetElement.textContent = value || '--';
+        } else {
+            console.warn(`Element with data-key="${key}" was not found`);
+        }
+    }
+</script>
+
+__FLOATER__
+
+</body>
+</html>
