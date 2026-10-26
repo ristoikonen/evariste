@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Polygraphs Stego</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --cadence-blue: #2563eb;
+      --cadence-dark: #0f172a;
+      --crayon-orange: #f78522;
+      --crayon-amber: #BF8040;
+      --crayon-blue: #406ABF;
+      --crayon-red: #BF4040;
+      --crayon-purple: #950495;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-400: #94a3b8;
+      --slate-500: #64748b;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --emerald-500: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--slate-50);
+      color: var(--slate-900);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 72rem;
+      margin: auto;
+      padding: 1.5rem;
+      width: 100%;
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 2rem;
+    }
+
+    .card {
+      background-color: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+    }
+
+    .btn {
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background-color: var(--cadence-blue);
+      color: white;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background-color: var(--slate-100);
+      border: 1px solid var(--slate-200);
+      color: var(--slate-700);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--slate-200);
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      border: 1px solid var(--slate-200);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      background-color: var(--slate-50);
+      color: var(--slate-800);
+      transition: all 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--cadence-blue);
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--slate-600);
+      margin-bottom: 0.5rem;
+    }
+
+    canvas {
+      border: 1px solid var(--slate-200);
+      background-color: white;
+    }
+
+    .dot-sm {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: 9999px;
+      display: inline-block;
+      margin-right: 0.5rem;
+      cursor: pointer;
+    }
+
+    .bg-crayonCyan {
+      background-color: #38bdf8;
+    }
+
+    .bg-crayonRose {
+      background-color: #f43f5e;
+    }
+
+    .bg-crayonEmerald {
+      background-color: #10b981;
+    }
+
+    .bg-crayonPurple {
+      background-color: #a855f7;
+    }
+
+    .bg-crayonYellow {
+      background-color: #f78522;
+    }
+
+    .selected {
+      transform: scale(1.4);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Polygon Card -->
+    <div class="card col-span-12 md:col-span-6 lg:col-span-4">
+      <h2 class="text-xl font-semibold mb-4">2‑D Polygon</h2>
+      <label for="inputField">Text (max 8 chars)</label>
+      <input type="text" id="inputField" placeholder="Enter text" maxlength="8" />
+      <div class="flex space-x-2 mt-2">
+        <button class="btn btn-primary" onclick="encodePolygon()">Encode</button>
+        <button class="btn btn-secondary" onclick="decodePolygon()">Decode</button>
+        <button class="btn btn-secondary" onclick="clearPolygonCanvas()">Clear</button>
+      </div>
+      <canvas id="polygonCanvas" width="300" height="300" class="mt-4"></canvas>
+      <label class="mt-2" for="polygonOutput">Output</label>
+      <textarea id="polygonOutput" rows="2" readonly></textarea>
+    </div>
+    <!-- Square Antiprism Card -->
+    <div class="card col-span-12 md:col-span-6 lg:col-span-4">
+      <h2 class="text-xl font-semibold mb-4">Square Antiprism</h2>
+      <label for="antiprismInput">Text (max 8 chars)</label>
+      <input type="text" id="antiprismInput" placeholder="Enter text" maxlength="8" />
+      <div class="flex space-x-2 mt-2">
+        <button class="btn btn-primary" onclick="encodeAntiprismX()">Encode</button>
+        <button class="btn btn-secondary" onclick="decodeAntiprismX()">Decode</button>
+        <button class="btn btn-secondary" onclick="clearAntiprismCanvas()">Clear</button>
+      </div>
+      <canvas id="antiprismCanvas" width="300" height="300" class="mt-4"></canvas>
+      <label class="mt-2" for="antiprismOutput">Output</label>
+      <textarea id="antiprismOutput" rows="2" readonly></textarea>
+    </div>
+    <!-- Penrose Triangle Card -->
+    <div class="card col-span-12 md:col-span-6 lg:col-span-4">
+      <h2 class="text-xl font-semibold mb-4">Penrose Triangle</h2>
+      <label for="penroseInput">Text (max 8 chars)</label>
+      <input type="text" id="penroseInput" placeholder="Enter text" maxlength="8" />
+      <div class="flex space-x-2 mt-2">
+        <button class="btn btn-primary" onclick="encodePenroseX()">Encode</button>
+        <button class="btn btn-secondary" onclick="decodePenroseX()">Decode</button>
+        <button class="btn btn-secondary" onclick="clearPenroseCanvas()">Clear</button>
+      </div>
+      <canvas id="penroseCanvas" width="300" height="300" class="mt-4"></canvas>
+      <label class="mt-2" for="penroseOutput">Output</label>
+      <textarea id="penroseOutput" rows="2" readonly></textarea>
+    </div>
+    <!-- Faceted Polyhedron Card -->
+    <div class="card col-span-12 md:col-span-6 lg:col-span-4">
+      <h2 class="text-xl font-semibold mb-4">Faceted Polyhedron</h2>
+      <label for="facetedInput">Text (max 8 chars)</label>
+      <input type="text" id="facetedInput" placeholder="Enter text" maxlength="8" />
+      <div class="flex space-x-2 mt-2">
+        <button class="btn btn-primary" onclick="encodeFacetedX()">Encode</button>
+        <button class="btn btn-secondary" onclick="decodeFacetedX()">Decode</button>
+        <button class="btn btn-secondary" onclick="clearFacetedCanvas()">Clear</button>
+      </div>
+      <canvas id="facetedCanvas" width="300" height="300" class="mt-4"></canvas>
+      <label class="mt-2" for="facetedOutput">Output</label>
+      <textarea id="facetedOutput" rows="2" readonly></textarea>
+    </div>
+    <!-- Bipyramic Card -->
+    <div class="card col-span-12 md:col-span-6 lg:col-span-4">
+      <h2 class="text-xl font-semibold mb-4">Bipyramic</h2>
+      <label for="bipyramicInput">Text (max 8 chars)</label>
+      <input type="text" id="bipyramicInput" placeholder="Enter text" maxlength="8" />
+      <div class="flex space-x-2 mt-2">
+        <button class="btn btn-primary" onclick="encodeBipyramicX()">Encode</button>
+        <button class="btn btn-secondary" onclick="decodeBipyramicX()">Decode</button>
+        <button class="btn btn-secondary" onclick="clearBipyramicCanvas()">Clear</button>
+      </div>
+      <canvas id="bipyramicCanvas" width="300" height="300" class="mt-4"></canvas>
+      <label class="mt-2" for="bipyramicOutput">Output</label>
+      <textarea id="bipyramicOutput" rows="2" readonly></textarea>
+    </div>
+    <!-- Octahedron Card -->
+    <div class="card col-span-12 md:col-span-6 lg:col-span-4">
+      <h2 class="text-xl font-semibold mb-4">Octahedron</h2>
+      <label for="octahedronInput">Text (max 8 chars)</label>
+      <input type="text" id="octahedronInput" placeholder="Enter text" maxlength="8" />
+      <div class="flex space-x-2 mt-2">
+        <button class="btn btn-primary" onclick="encodeOctahedronX()">Encode</button>
+        <button class="btn btn-secondary" onclick="decodeOctahedronX()">Decode</button>
+        <button class="btn btn-secondary" onclick="clearOctahedronCanvas()">Clear</button>
+      </div>
+      <canvas id="octahedronCanvas" width="300" height="300" class="mt-4"></canvas>
+      <label class="mt-2" for="octahedronOutput">Output</label>
+      <textarea id="octahedronOutput" rows="2" readonly></textarea>
+    </div>
+  </div>
+  <script>
+    function clearCanvasById(id) { const c = document.getElementById(id); if (c && c.getContext) { c.getContext('2d').clearRect(0, 0, c.width, c.height); } }
+    // Polygon placeholders
+    const polygonCanvas = document.getElementById('polygonCanvas'); const polygonCtx = polygonCanvas.getContext('2d');
+    function clearPolygonCanvas() { clearCanvasById('polygonCanvas'); }
+    function encodePolygon() { alert('Polygon encoding placeholder'); }
+    function decodePolygon() { alert('Polygon decoding placeholder'); }
+    // Polyhedra placeholders
+    const polyhedraCanvas = document.getElementById('polyhedraCanvas'); const polyhedraCtx = polyhedraCanvas.getContext('2d');
+    function clearPolyhedraCanvas() { clearCanvasById('polyhedraCanvas'); }
+    function encodePolyhedra() { alert('3‑D Polyhedra encoding placeholder'); }
+    function decodePolyhedra() { alert('3‑D Polyhedra decoding placeholder'); }
+    // New objects placeholders
+    // Penrose Triangle helpers
+    function clearPenroseCanvas() { clearCanvasById('penroseCanvas'); }
+    function encodePenroseX() {
+      const input = document.getElementById('penroseInput').value;
+      if (!input) { alert('Enter text (max 8 chars).'); return; }
+      if (input.length > 8) { alert('Maximum 8 chars.'); return; }
+      clearPenroseCanvas();
+      const canvas = document.getElementById('penroseCanvas');
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+      // Draw 3‑D Penrose triangle (impossible triangle) using isometric style
+      function drawPenroseTriangle() {
+        const s = 140; // size
+        const t = 30;  // thickness
+        const colors = { top: '#3a86ff', right: '#205493', left: '#102a43' };
+        // Helper to draw filled polygon
+        function poly(pts, fill) { ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); }
+        // Pre‑compute vertices for the three beams
+        const a = [{ x: 0, y: -s }, { x: s * Math.sqrt(3) / 2, y: -s / 2 }, { x: s * Math.sqrt(3) / 2 - t * Math.sqrt(3) / 2, y: -s / 2 + t * 1.5 }, { x: t, y: 0 }];
+        // Rotate and translate each beam to its position
+        const rad = Math.PI / 3; // 60°
+        function rotate(pt, ang) { const ca = Math.cos(ang), sa = Math.sin(ang); return { x: pt.x * ca - pt.y * sa, y: pt.x * sa + pt.y * ca }; }
+        // Beam 1 – top
+        a.forEach(p => { const r = rotate(p, 0); p.x = r.x + cx; p.y = r.y + cy; });
+        poly(a.map(p => [p.x, p.y]), colors.top);
+        // Beam 2 – right (rotate 120°)
+        const b = a.map(p => rotate({ x: p.x - cx, y: p.y - cy }, 2 * Math.PI / 3));
+        b.forEach(p => { p.x += cx; p.y += cy; });
+        poly(b.map(p => [p.x, p.y]), colors.right);
+        // Beam 3 – left (rotate -120°)
+        const c = a.map(p => rotate({ x: p.x - cx, y: p.y - cy }, -2 * Math.PI / 3));
+        c.forEach(p => { p.x += cx; p.y += cy; });
+        poly(c.map(p => [p.x, p.y]), colors.left);
+      }
+      drawPenroseTriangle();
+      // Embed characters at three prominent vertices of the triangle
+      const embedPoints = [
+        { x: cx, y: cy - 140 }, // top vertex
+        { x: cx + 140 * Math.sqrt(3) / 2, y: cy + 70 }, // right vertex
+        { x: cx - 140 * Math.sqrt(3) / 2, y: cy + 70 }  // left vertex
+      ];
+
+      const maxChars = Math.min(input.length, embedPoints.length);
+      for (let i = 0; i < maxChars; i++) {
+        const p = embedPoints[i];
+        const gray = input.charCodeAt(i);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = vertexColor;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgb(${gray},${gray},${gray})`;
+        ctx.fill();
+      }
+    }
+    function decodePenroseX() {
+      const canvas = document.getElementById('penroseCanvas');
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+      // Same vertices used during encoding
+      const embedPoints = [
+        { x: cx, y: cy - 140 },
+        { x: cx + 140 * Math.sqrt(3) / 2, y: cy + 70 },
+        { x: cx - 140 * Math.sqrt(3) / 2, y: cy + 70 }
+      ];
+      let decoded = '';
+      for (let i = 0; i < embedPoints.length; i++) {
+        const p = embedPoints[i];
+        const pixel = ctx.getImageData(Math.round(p.x), Math.round(p.y), 1, 1).data;
+        const r = pixel[0], g = pixel[1], b = pixel[2];
+        if (r === g && g === b && r !== 255 && r !== 0) {
+          decoded += String.fromCharCode(r);
+        }
+      }
+      document.getElementById('penroseOutput').value = decoded;
+    }
+    // Faceted Polyhedron helpers
+    function clearFacetedCanvas() { clearCanvasById('facetedCanvas'); }
+    function encodeFacetedX() {
+      const input = document.getElementById('facetedInput').value;
+      if (!input) { alert('Enter text (max 8 chars).'); return; }
+      if (input.length > 8) { alert('Maximum 8 chars.'); return; }
+      clearFacetedCanvas();
+      const canvas = document.getElementById('facetedCanvas');
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+      const radius = Math.min(cx, cy) - 20;
+      const vertexColor = '#8a2be2'; // blueviolet
+      const points = [];
+      for (let i = 0; i < input.length; i++) {
+        const angle = (2 * Math.PI / 8) * i - Math.PI / 2;
+        const x = cx + radius * Math.cos(angle);
+        const y = cy + radius * Math.sin(angle);
+        points.push({ x, y });
+      }
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
+      ctx.closePath();
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      points.forEach((p, i) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = vertexColor;
+        ctx.fill();
+        const gray = input.charCodeAt(i);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgb(${gray},${gray},${gray})`;
+        ctx.fill();
+      });
+    }
+    function decodeFacetedX() {
+      const canvas = document.getElementById('facetedCanvas');
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+      const radius = Math.min(cx, cy) - 20;
+      let decoded = '';
+      for (let i = 0; i < 8; i++) {
+        const angle = (2 * Math.PI / 8) * i - Math.PI / 2;
+        const x = Math.round(cx + radius * Math.cos(angle));
+        const y = Math.round(cy + radius * Math.sin(angle));
+        let found = false;
+        for (let dy = -1; dy <= 1 && !found; dy++) {
+          for (let dx = -1; dx <= 1 && !found; dx++) {
+            const px = x + dx, py = y + dy;
+            if (px < 0 || py < 0 || px >= canvas.width || py >= canvas.height) continue;
+            const pixel = ctx.getImageData(px, py, 1, 1).data;
+            const r = pixel[0], g = pixel[1], b = pixel[2];
+            if (r === g && g === b && r !== 255 && r !== 0) { decoded += String.fromCharCode(r); found = true; }
+          }
+        }
+        if (!found) break;
+      }
+      document.getElementById('facetedOutput').value = decoded;
+    }
+    // Bipyramic helpers
+    function clearBipyramicCanvas() { clearCanvasById('bipyramicCanvas'); }
+    function encodeBipyramic() {
+      const input = document.getElementById('bipyramicInput').value;
+      if (!input) { alert('Enter text (max 8 chars).'); return; }
+      if (input.length > 8) { alert('Maximum 8 chars.'); return; }
+      clearBipyramicCanvas();
+      const canvas = document.getElementById('bipyramicCanvas');
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+      const radius = Math.min(cx, cy) - 20;
+      const vertexColor = '#00ced1'; // darkturquoise
+      const points = [];
+      for (let i = 0; i < input.length; i++) {
+        const angle = (2 * Math.PI / 8) * i - Math.PI / 2;
+        const x = cx + radius * Math.cos(angle);
+        const y = cy + radius * Math.sin(angle);
+        points.push({ x, y });
+      }
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
+      ctx.closePath();
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      points.forEach((p, i) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = vertexColor;
+        ctx.fill();
+        const gray = input.charCodeAt(i);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgb(${gray},${gray},${gray})`;
+        ctx.fill();
+      });
+    }
+    function decodeBipyramicX() {
+      const canvas = document.getElementById('bipyramicCanvas');
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+      const radius = Math.min(cx, cy) - 20;
+      let decoded = '';
+      for (let i = 0; i < 8; i++) {
+        const angle = (2 * Math.PI / 8) * i - Math.PI / 2;
+        const x = Math.round(cx + radius * Math.cos(angle));
+        const y = Math.round(cy + radius * Math.sin(angle));
+        let found = false;
+        for (let dy = -1; dy <= 1 && !found; dy++) {
+          for (let dx = -1; dx <= 1 && !found; dx++) {
+            const px = x + dx, py = y + dy;
+            if (px < 0 || py < 0 || px >= canvas.width || py >= canvas.height) continue;
+            const pixel = ctx.getImageData(px, py, 1, 1).data;
+            const r = pixel[0], g = pixel[1], b = pixel[2];
+            if (r === g && g === b && r !== 255 && r !== 0) { decoded += String.fromCharCode(r); found = true; }
+          }
+        }
+        if (!found) break;
+      }
+      document.getElementById('bipyramicOutput').value = decoded;
+    }
+    // Octahedron helpers
+    function clearOctahedronCanvas() { clearCanvasById('octahedronCanvas'); }
+    function encodeOctahedronX() {
+      const input = document.getElementById('octahedronInput').value;
+      if (!input) { alert('Enter text (max 8 chars).'); return; }
+      if (input.length > 8) { alert('Maximum 8 chars.'); return; }
+      clearOctahedronCanvas();
+      const canvas = document.getElementById('octahedronCanvas');
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+      const radius = Math.min(cx, cy) - 20;
+      const vertexColor = '#ff1493'; // deeppink
+      const points = [];
+      for (let i = 0; i < input.length; i++) {
+        const angle = (2 * Math.PI / 8) * i - Math.PI / 2;
+        const x = cx + radius * Math.cos(angle);
+        const y = cy + radius * Math.sin(angle);
+        points.push({ x, y });
+      }
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
+      ctx.closePath();
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      points.forEach((p, i) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = vertexColor;
+        ctx.fill();
+        const gray = input.charCodeAt(i);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgb(${gray},${gray},${gray})`;
+        ctx.fill();
+      });
+    }
+    function decodeOctahedronX() {
+      const canvas = document.getElementById('octahedronCanvas');
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+      const radius = Math.min(cx, cy) - 20;
+      let decoded = '';
+      for (let i = 0; i < 8; i++) {
+        const angle = (2 * Math.PI / 8) * i - Math.PI / 2;
+        const x = Math.round(cx + radius * Math.cos(angle));
+        const y = Math.round(cy + radius * Math.sin(angle));
+        let found = false;
+        for (let dy = -1; dy <= 1 && !found; dy++) {
+          for (let dx = -1; dx <= 1 && !found; dx++) {
+            const px = x + dx, py = y + dy;
+            if (px < 0 || py < 0 || px >= canvas.width || py >= canvas.height) continue;
+            const pixel = ctx.getImageData(px, py, 1, 1).data;
+            const r = pixel[0], g = pixel[1], b = pixel[2];
+            if (r === g && g === b && r !== 255 && r !== 0) { decoded += String.fromCharCode(r); found = true; }
+          }
+        }
+        if (!found) break;
+      }
+      document.getElementById('octahedronOutput').value = decoded;
+    }
+    // Placeholder functions removed – use the X‑suffixed implementations above
+
+    window.onload = function () { clearPolygonCanvas(); clearPolyhedraCanvas(); clearPenroseCanvas(); clearFacetedCanvas(); clearBipyramicCanvas(); clearOctahedronCanvas(); };
+  </script>
+</body>
+
+</html>

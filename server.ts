@@ -4,6 +4,7 @@ import { mkdir, readdir } from "node:fs/promises";
 import { join } from "node:path";
 //import { errorResponse} from "./utils/response";
 // , errorJSONResponseCORS, successJSONResponseCORS,errorJSONResponse, successJSONResponse 
+import stegoPage from "./pages/stegopage.html" with { type: "text" };
 
 //import testformPage from "./pages/testform.html" with { type: "text" };
 //import baseimagePage from "./pages/baseimage.html" with { type: "text" };
@@ -65,7 +66,7 @@ export function errorResponse(message: string, status = 400, enableCors = true):
     routes: {
       // root
       "/": () => {
-        return new Response(Bun.file("./public/profilePage.html"), {
+        return new Response(Bun.file("./public/a.html"), {
           headers: { "Content-Type": "text/html; charset=utf-8" },
         });
       },
@@ -75,9 +76,23 @@ export function errorResponse(message: string, status = 400, enableCors = true):
         });
       },
       "/stego": () => {
-        return new Response(Bun.file("./pages/stego.html"), {
-          headers: { "Content-Type": "text/html; charset=utf-8" },
+        return new Response(Bun.file("./public/stego.html"), {
+          headers: {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+          },
         });
+      },
+       "/poly": () => {
+         return new Response(Bun.file("./public/poly.html"), {
+           headers: {
+             "Content-Type": "text/html; charset=utf-8",
+             "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+           },
+         });
+       },
+      "/stegopage": {
+        GET: () => new Response(String(stegoPage), { headers: { "Content-Type": "text/html, Cache-Control: no-store, no-cache, must-revalidate, max-age=0" } }) //headers: { "Content-Type": "text/html", "Cross-Origin-Opener-Policy": "same-origin-allow-popups" } })
       },
       "/galois": () => {
         return new Response(Bun.file("./public/galois.html"), {

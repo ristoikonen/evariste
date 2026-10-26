@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Stego Graph</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --cadence-blue: #2563eb;
+            --cadence-dark: #0f172a;
+            --crayon-orange: #f78522;
+            --crayon-amber: #BF8040;
+            --crayon-blue: #406ABF;
+            --crayon-red: #BF4040;
+            --crayon-purple: #950495;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --emerald-500: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--slate-50);
+            color: var(--slate-900);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 72rem;
+            margin: auto;
+            padding: 1.5rem;
+            width: 100%;
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid var(--slate-200);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+        }
+
+        .btn {
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: var(--cadence-blue);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background-color: var(--slate-100);
+            border: 1px solid var(--slate-200);
+            color: var(--slate-700);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--slate-200);
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            border: 1px solid var(--slate-200);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            background-color: var(--slate-50);
+            color: var(--slate-800);
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--cadence-blue);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--slate-600);
+            margin-bottom: 0.5rem;
+        }
+
+        canvas {
+            border: 1px solid var(--slate-200);
+            background-color: white;
+        }
+
+        .dot-sm {
+            width: 0.625rem;
+            height: 0.625rem;
+            border-radius: 9999px;
+            display: inline-block;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+
+        .bg-crayonCyan {
+            background-color: #38bdf8;
+        }
+
+        .bg-crayonRose {
+            background-color: #f43f5e;
+        }
+
+        .bg-crayonEmerald {
+            background-color: #10b981;
+        }
+
+        .bg-crayonPurple {
+            background-color: #a855f7;
+        }
+
+        .bg-crayonYellow {
+            background-color: #f78522;
+        }
+
+        .selected {
+            transform: scale(1.4);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="card-shadow" style="margin-bottom:2rem;">
+        <div class="container">
+            <h1 class="text-slate-900" style="font-size:1.5rem;font-weight:700;">Stego Graph Encoder / Decoder</h1>
+        </div>
+    </header>
+    <main class="container">
+        <div class="col-span-7">
+            <div class="card">
+                <h2 class="text-slate-900" style="font-size:1.25rem;font-weight:700;">Input (max 8 ASCII chars)</h2>
+                <label for="inputField">Text Payload</label>
+                <input type="text" id="inputField" placeholder="Enter up to 8 characters" maxlength="8">
+                <!-- Glow2 colour palette using dot‑sm spans -->
+                <div class="flex-row space-x-1.5 mt-2" id="colorPalette">
+                    <span class="dot-sm bg-crayonCyan cursor-pointer" onclick="setSelectedColor('#38bdf8', this)"
+                        title="Cyan"></span>
+                    <span class="dot-sm bg-crayonRose cursor-pointer" onclick="setSelectedColor('#f43f5e', this)"
+                        title="Rose / Coral"></span>
+                    <span class="dot-sm bg-crayonEmerald cursor-pointer" onclick="setSelectedColor('#10b981', this)"
+                        title="Emerald"></span>
+                    <span class="dot-sm bg-crayonPurple cursor-pointer" onclick="setSelectedColor('#a855f7', this)"
+                        title="Purple"></span>
+                    <span class="dot-sm bg-crayonYellow cursor-pointer" onclick="setSelectedColor('#f78522', this)"
+                        title="Yellow"></span>
+                </div>
+                <button class="btn btn-primary" style="margin-top:1rem;" onclick="encodeData()">Encode → Graph</button>
+                <button class="btn btn-primary" style="margin-top:1rem;margin-left:0.5rem;"
+                    onclick="encodeData2()">Encode → Points</button>
+                <button class="btn btn-primary" style="margin-top:1rem;margin-left:0.5rem;"
+                    onclick="encodePolygon()">Encode → Polygon</button>
+            </div>
+        </div>
+        <div class="col-span-5">
+            <div class="card">
+                <h2 class="text-slate-900" style="font-size:1.25rem;font-weight:700;">2‑D Steganographic Graph</h2>
+                <canvas id="graphCanvas" width="400" height="120"></canvas>
+                <button class="btn btn-secondary" style="margin-top:1rem;" onclick="decodeData()">← Decode
+                    Graph</button>
+                <label for="outputField" style="margin-top:1rem;">Decoded Output</label>
+                <input type="text" id="outputField" readonly placeholder="Decoded text will appear here">
+            </div>
+            <!-- New card for point‑based encoding -->
+            <div class="card" style="margin-top:2rem;">
+                <h2 class="text-slate-900" style="font-size:1.25rem;font-weight:700;">2‑D Points Graph</h2>
+                <canvas id="pointsCanvas" width="400" height="120"></canvas>
+                <button class="btn btn-secondary" style="margin-top:1rem;" onclick="decodePoints()">← Decode
+                    Points</button>
+                <label for="pointsOutput" style="margin-top:1rem;">Decoded Output</label>
+                <input type="text" id="pointsOutput" readonly placeholder="Decoded text will appear here">
+            </div>
+            <!-- New card for polygon‑based encoding -->
+            <div class="card" style="margin-top:2rem;">
+                <h2 class="text-slate-900" style="font-size:1.25rem;font-weight:700;">2‑D Polygon Graph</h2>
+                <canvas id="polygonCanvas" width="400" height="200"></canvas>
+                <button class="btn btn-primary" style="margin-top:1rem;" onclick="encodePolygon()">Encode →
+                    Polygon</button>
+                <button class="btn btn-secondary" style="margin-top:1rem; margin-left:0.5rem;"
+                    onclick="decodePolygon()">← Decode Polygon</button>
+                <label for="polygonOutput" style="margin-top:1rem;">Decoded Output</label>
+                <input type="text" id="polygonOutput" readonly placeholder="Decoded text will appear here">
+            </div>
+        </div>
+    </main>
+    <footer class="card-shadow" style="margin-top:2rem;">
+        <div class="container" style="text-align:center;font-size:0.75rem;color:var(--slate-500);">
+            Glow2 • Stego Graph Demo – Palette: #f78522, #BF8040, #406ABF, #BF4040, #950495
+        </div>
+    </footer>
+    <script>
+        // Simple grayscale encoding: each character byte -> a square block on the canvas
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const pointsCanvas = document.getElementById('pointsCanvas');
+        const pointsCtx = pointsCanvas.getContext('2d');
+        const polygonCanvas = document.getElementById('polygonCanvas');
+        const polygonCtx = polygonCanvas.getContext('2d');
+        const BLOCK_W = 40; // width of each block
+        const BLOCK_H = 80; // height of each block
+        const POINT_SPACING = 45; // horizontal spacing for points
+        const START_X = 20; // left margin
+        const START_Y = 20; // top margin
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function clearPointsCanvas() {
+            pointsCtx.clearRect(0, 0, pointsCanvas.width, pointsCanvas.height);
+            pointsCtx.fillStyle = '#ffffff';
+            pointsCtx.fillRect(0, 0, pointsCanvas.width, pointsCanvas.height);
+        }
+
+        function clearPolygonCanvas() {
+            polygonCtx.clearRect(0, 0, polygonCanvas.width, polygonCanvas.height);
+            polygonCtx.fillStyle = '#ffffff';
+            polygonCtx.fillRect(0, 0, polygonCanvas.width, polygonCanvas.height);
+        }
+        // New 3‑D Polyhedra canvas clear
+        function clearPolyhedraCanvas() {
+            const polyCanvas = document.getElementById('polyhedraCanvas');
+            const polyCtx = polyCanvas.getContext('2d');
+            polyCtx.clearRect(0, 0, polyCanvas.width, polyCanvas.height);
+            polyCtx.fillStyle = '#ffffff';
+            polyCtx.fillRect(0, 0, polyCanvas.width, polyCanvas.height);
+        }
+
+        function encodeData() {
+            // existing grayscale encoding (unchanged)
+
+            const input = document.getElementById('inputField').value;
+            if (!input) { alert('Please enter some text (up to 8 characters).'); return; }
+            if (input.length > 8) { alert('Maximum of 8 characters allowed.'); return; }
+            clearCanvas();
+            for (let i = 0; i < input.length; i++) {
+                const byte = input.charCodeAt(i);
+                const gray = byte;
+                ctx.fillStyle = `rgb(${gray},${gray},${gray})`;
+                const x = START_X + i * (BLOCK_W + 5);
+                ctx.fillRect(x, START_Y, BLOCK_W, BLOCK_H);
+            }
+        }
+
+        function decodeData() {
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let decoded = '';
+            for (let i = 0; i < 8; i++) {
+                const x = START_X + i * (BLOCK_W + 5) + Math.floor(BLOCK_W / 2);
+                const y = START_Y + Math.floor(BLOCK_H / 2);
+                const idx = (y * canvas.width + x) * 4;
+                const r = imgData[idx];
+                if (r === 255) break;
+                decoded += String.fromCharCode(r);
+            }
+            document.getElementById('outputField').value = decoded;
+        }
+
+        // Point‑based encoding (single 2‑D object with several points)
+        function encodeData2() {
+            const input = document.getElementById('inputField').value;
+            if (!input) { alert('Please enter some text (up to 8 characters).'); return; }
+            if (input.length > 8) { alert('Maximum of 8 characters allowed.'); return; }
+            clearPointsCanvas();
+            for (let i = 0; i < input.length; i++) {
+                const byte = input.charCodeAt(i);
+                const gray = byte;
+                const x = START_X + i * POINT_SPACING;
+                const yRange = pointsCanvas.height - START_Y * 2;
+                const y = START_Y + Math.round((byte / 255) * yRange);
+                pointsCtx.beginPath();
+                pointsCtx.arc(x, y, 5, 0, 2 * Math.PI);
+                pointsCtx.fillStyle = `rgb(${gray},${gray},${gray})`;
+                pointsCtx.fill();
+            }
+        }
+        // Polygon encoding using selected colour from the palette
+        function encodePolygon() {
+            const input = document.getElementById('inputField').value;
+            if (!input) { alert('Please enter some text (up to 8 characters).'); return; }
+            if (input.length > 8) { alert('Maximum of 8 characters allowed.'); return; }
+            clearPolygonCanvas();
+            const centerX = polygonCanvas.width / 2;
+            const centerY = polygonCanvas.height / 2;
+            const maxRadius = Math.min(centerX, centerY) - 20;
+            const minRadius = 20;
+            const radius = (minRadius + maxRadius) / 2; // constant radius for all vertices
+            const points = [];
+            // use the globally selected colour (fallback to cyan if not set)
+            const vertexColor = window.selectedPolygonColor || '#38bdf8';
+            for (let i = 0; i < input.length; i++) {
+                const angle = (2 * Math.PI / 8) * i - Math.PI / 2; // start at top
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                points.push({ x, y });
+            }
+            // draw polygon connecting vertices first
+            polygonCtx.beginPath();
+            polygonCtx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                polygonCtx.lineTo(points[i].x, points[i].y);
+            }
+            polygonCtx.closePath();
+            polygonCtx.strokeStyle = '#000000';
+            polygonCtx.lineWidth = 2;
+            polygonCtx.stroke();
+            // now draw vertices on top using the chosen colour and encode characters as grayscale inside the same colour
+            for (let i = 0; i < points.length; i++) {
+                polygonCtx.beginPath();
+                polygonCtx.arc(points[i].x, points[i].y, 5, 0, 2 * Math.PI);
+                // colour of the vertex (visible to user)
+                polygonCtx.fillStyle = vertexColor;
+                polygonCtx.fill();
+                // overlay a tiny inner dot that carries the grayscale value for decoding
+                if (i < input.length) {
+                    const gray = input.charCodeAt(i);
+                    polygonCtx.beginPath();
+                    polygonCtx.arc(points[i].x, points[i].y, 2, 0, 2 * Math.PI);
+                    polygonCtx.fillStyle = `rgb(${gray},${gray},${gray})`;
+                    polygonCtx.fill();
+                }
+            }
+        }
+        // Helper to set selected colour from the palette
+        window.selectedPolygonColor = '#38bdf8';
+        function setSelectedColor(col, el) {
+            window.selectedPolygonColor = col;
+            // update UI – highlight the selected dot by making it slightly larger
+            document.querySelectorAll('#colorPalette span').forEach(span => {
+                span.classList.remove('selected');
+                span.style.transform = '';
+            });
+            el.classList.add('selected');
+            el.style.transform = 'scale(1.4)';
+        }
+        function decodePoints() {
+            const imgData = pointsCtx.getImageData(0, 0, pointsCanvas.width, pointsCanvas.height).data;
+            let decoded = '';
+            for (let i = 0; i < 8; i++) {
+                const x = START_X + i * POINT_SPACING;
+                // Sample the central pixel of the expected point area
+                const yRange = pointsCanvas.height - START_Y * 2;
+                const sampleY = START_Y + Math.round((yRange / 2)); // midpoint
+                const idx = (sampleY * pointsCanvas.width + x) * 4;
+                const r = imgData[idx];
+                if (r === 255) break; // white background indicates no point
+                decoded += String.fromCharCode(r);
+            }
+            document.getElementById('pointsOutput').value = decoded;
+        }
+        // Polygon decoding – robust pixel search around each vertex, ignore stroke (black) and background (white)
+        function decodePolygon() {
+            const centerX = polygonCanvas.width / 2;
+            const centerY = polygonCanvas.height / 2;
+            const maxRadius = Math.min(centerX, centerY) - 20;
+            const minRadius = 20;
+            const radius = (minRadius + maxRadius) / 2;
+            let decoded = '';
+            for (let i = 0; i < 8; i++) {
+                const angle = (2 * Math.PI / 8) * i - Math.PI / 2;
+                const x = Math.round(centerX + radius * Math.cos(angle));
+                const y = Math.round(centerY + radius * Math.sin(angle));
+                // Scan a 3×3 neighbourhood to locate the inner grayscale dot, ignoring black stroke and white background
+                let found = false;
+                for (let dy = -1; dy <= 1 && !found; dy++) {
+                    for (let dx = -1; dx <= 1 && !found; dx++) {
+                        const px = x + dx;
+                        const py = y + dy;
+                        if (px < 0 || py < 0 || px >= polygonCanvas.width || py >= polygonCanvas.height) continue;
+                        const pixel = polygonCtx.getImageData(px, py, 1, 1).data;
+                        const r = pixel[0];
+                        const g = pixel[1];
+                        const b = pixel[2];
+                        // Accept only true grayscale inner dots (r===g===b) not background (255) or stroke (0)
+                        if (r === g && g === b && r !== 255 && r !== 0) {
+                            decoded += String.fromCharCode(r);
+                            found = true;
+                        }
+                    }
+                }
+                if (!found) break; // no more vertices / reached end of string
+            }
+            document.getElementById('polygonOutput').value = decoded;
+        }
+        function encodePolyhedra() {
+            alert('3‑D Polyhedra encoding not yet implemented.');
+        }
+        function decodePolyhedra() {
+            alert('3‑D Polyhedra decoding not yet implemented.');
+        }
+        window.onload = function () {
+            clearCanvas();
+            clearPointsCanvas();
+            clearPolygonCanvas();
+            clearPolyhedraCanvas();
+        };
+    </script>
+</body>
+
+</html>
