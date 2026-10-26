@@ -5,9 +5,10 @@ import { join } from "node:path";
 //import { errorResponse} from "./utils/response";
 // , errorJSONResponseCORS, successJSONResponseCORS,errorJSONResponse, successJSONResponse 
 
-// Static HTML pages will be served using Bun.file to avoid HTMLBundle type issues.
-// No need to import them as modules.
+//import testformPage from "./pages/testform.html" with { type: "text" };
+//import baseimagePage from "./pages/baseimage.html" with { type: "text" };
 
+//import signinPage from "./pages/signin.html" with { type: "text" };
 import { GaloisField256 } from "./services/galoisField";
 
 const imageDir = "./images";
@@ -34,9 +35,8 @@ export function jsonResponse<T>(data: T, status = 200, enableCors = true): Respo
   });
 }
 
-/**
- * Creates a standardized error JSON Response.
- */
+
+// Creates a standardized error JSON Response.
 export function errorResponse(message: string, status = 400, enableCors = true): Response {
   return jsonResponse(
     {
@@ -65,12 +65,17 @@ export function errorResponse(message: string, status = 400, enableCors = true):
     routes: {
       // root
       "/": () => {
-        return new Response(Bun.file("./pages/profile.html"), {
+        return new Response(Bun.file("./public/profilePage.html"), {
           headers: { "Content-Type": "text/html; charset=utf-8" },
         });
       },
       "/glow2": () => {
-        return new Response(Bun.file("./pages/glow2.html"), {
+        return new Response(Bun.file("./public/glow2.html"), {
+          headers: { "Content-Type": "text/html; charset=utf-8" },
+        });
+      },
+      "/stego": () => {
+        return new Response(Bun.file("./pages/stego.html"), {
           headers: { "Content-Type": "text/html; charset=utf-8" },
         });
       },
@@ -111,8 +116,8 @@ export function errorResponse(message: string, status = 400, enableCors = true):
         }
       },
 
-      
-    
+
+
     },
 
     // Global catch-all block - public HTMLs and error
@@ -122,20 +127,20 @@ export function errorResponse(message: string, status = 400, enableCors = true):
       const path = new URL(req.url).pathname;
       //if (url.pathname === "/signin.html" || url.pathname === "/index.html") {
       //NOTE if html file is in public folder, it will be served here!
-        const file = Bun.file(`./public${url.pathname}`);
-        if (await file.exists()) {
-          return new Response(file);
-        }
+      const file = Bun.file(`./public${url.pathname}`);
+      if (await file.exists()) {
+        return new Response(file);
+      }
       //}
 
       return errorResponse("Not Found", 404, true);
     },
   });
- 
+
 
 })().catch((err) => {
-    console.error(err);
-    process.exitCode = 1;
+  console.error(err);
+  process.exitCode = 1;
 });
 
 console.log(`Evariste API running. http://localhost:3000`);

@@ -1,10 +1,4 @@
 {
-  "name": "evariste",
-  "main": "server.ts",
-  "scripts": {
-    "dev": "bun --hot server.ts",
-    "start": "bun run server.ts"
-  },
   "compilerOptions": {
     // Environment setup & latest features
     "lib": [

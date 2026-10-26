@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+/* import { S3Client, PutObjectCommand, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 
 // Configure S3 client for Cloudflare R2
 const s3 = new S3Client({
@@ -49,9 +49,9 @@ class IdentifierCache {
 
 const idCache = new IdentifierCache();
 
-/**
- * Check if a universal ID or name already exists in R2 storage.
- */
+
+ // Check if a universal ID or name already exists in R2 storage.
+
 export async function checkIdentifierExists(universalId: string): Promise<boolean> {
   const cached = idCache.get(universalId);
   if (cached) return true;
@@ -70,9 +70,9 @@ export async function checkIdentifierExists(universalId: string): Promise<boolea
   }
 }
 
-/**
- * Store the generated 14-byte packet and cache it locally in Bun.
- */
+
+ //Store the generated 14-byte packet and cache it locally in Bun.
+
 export async function storeIdentifier(universalId: string, payloadBuffer: Uint8Array): Promise<void> {
   await s3.send(new PutObjectCommand({
     Bucket: BUCKET_NAME,
@@ -85,9 +85,9 @@ export async function storeIdentifier(universalId: string, payloadBuffer: Uint8A
   idCache.set(universalId, payloadBuffer);
 }
 
-/**
- * Retrieve the 14-byte payload buffer for a given universal ID.
- */
+
+ //Retrieve the 14-byte payload buffer for a given universal ID.
+
 export async function getIdentifier(universalId: string): Promise<Uint8Array | null> {
   const cached = idCache.get(universalId);
   if (cached) return cached;
@@ -100,7 +100,6 @@ export async function getIdentifier(universalId: string): Promise<Uint8Array | n
 
     if (!response.Body) return null;
 
-    // Convert stream to Uint8Array in Bun
     const byteArray = await response.Body.transformToByteArray();
     idCache.set(universalId, byteArray);
     return byteArray;
@@ -110,4 +109,4 @@ export async function getIdentifier(universalId: string): Promise<Uint8Array | n
     }
     throw error;
   }
-}
+} */

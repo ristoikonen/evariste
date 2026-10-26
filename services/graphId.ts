@@ -37,7 +37,7 @@ export function encodeGraphId(config: AssetConfig): string {
 
   // Append Galois Field GF(2^8) Reed-Solomon Parity Symbols
   const parityBytes = reedSolomonEncode(rawBuffer, RS_PARITY_BYTES);
-  
+
   const finalPacket = new Uint8Array(rawBuffer.length + parityBytes.length);
   finalPacket.set(rawBuffer, 0);
   finalPacket.set(parityBytes, rawBuffer.length);
@@ -67,7 +67,7 @@ export function decodeGraphId(graphId: string): AssetConfig {
   // Perform Reed-Solomon error correction validation over GF(2^8)
   const correctedPacket = reedSolomonDecode(packet, RS_PARITY_BYTES);
   const view = new DataView(correctedPacket.buffer);
-  
+
   if (correctedPacket[0] !== 0x4F || correctedPacket[1] !== 0x4B) {
     throw new Error('Invalid asset graph ID: Magic header mismatch.');
   }
@@ -77,7 +77,7 @@ export function decodeGraphId(graphId: string): AssetConfig {
   const padding = correctedPacket[7] || 0;
   const styleFlags = view.getUint16(8);
   const seed = view.getUint32(10);
-  
+
   const payload = correctedPacket.slice(HEADER_SIZE, correctedPacket.length - RS_PARITY_BYTES);
 
   return { width, height, padding, styleFlags, seed, payload };
